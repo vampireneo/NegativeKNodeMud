@@ -1,5 +1,5 @@
 var websocket = require("websocket-server");
-var timerQueue = require("queue");
+var timerQueue = require("./queue.js");
 
 function start() {
 	var socketServer;
