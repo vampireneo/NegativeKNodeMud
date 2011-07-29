@@ -13,15 +13,13 @@
 
 	output = document.getElementById("output");
 
-	serverSocket = new WebSocket("ws:127.0.0.1:4000");
-	message = "Stuff";
+	serverSocket = new WebSocket("ws:192.168.1.2:4000");
 
 	serverSocket.onopen = function(event) {
 		writeOutput("Connected.");
-		serverSocket.send("A user connected.");
 	};
 	serverSocket.onmessage = function(event) {
-		writeOutput("Message: " + event.data);
+		writeOutput(event.data);
 	};
 	serverSocket.onclose = function(event) {
 		writeOutput("Connection closed.");
