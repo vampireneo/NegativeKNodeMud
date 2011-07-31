@@ -1,4 +1,3 @@
-var user = require("./user");
 var websocket = require("websocket-server");
 
 function Machine(socketServer, connection) {
