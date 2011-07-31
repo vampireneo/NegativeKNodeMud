@@ -7,4 +7,6 @@ function print(errorLevel, msg) {
 	}
 }
 
+// I hear that saving to a file might be a good idea, too!
+
 exports.print = print;
