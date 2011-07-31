@@ -1,5 +1,6 @@
+var log = require("./log");
 var server = require("./server");
 var db = require("./db");
 
-db.start();
-server.start(db);
+db.start(log);
+server.start(log, db);

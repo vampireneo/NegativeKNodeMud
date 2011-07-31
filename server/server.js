@@ -43,7 +43,7 @@ Machine.prototype.authUser = function(credentials) {
 	}
 }
 
-function start(world) {
+function start(log, db) {
 	var socketServer;
 
 	socketServer = websocket.createServer();
