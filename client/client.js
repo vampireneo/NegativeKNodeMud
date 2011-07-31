@@ -3,8 +3,6 @@ var serverSocket, message, output;
 output = document.getElementById("output");
 
 serverSocket = new WebSocket("ws:192.168.1.2:4000");
-	
-message = "Stuff";
 
 serverSocket.onopen = function(event) {
 	writeOutput("Connected.");
@@ -20,14 +18,15 @@ serverSocket.onclose = function(event) {
 };
 
 function writeOutput(message) {
-	element = document.createElement("p");
+	var element = document.createElement("p");
 	element.innerHTML = message;
 	output.appendChild(element);
 }
 
 function inputSubmit() {
-	input = document.getElementById("input");
+	input = document.getElementById("command");
 
 	serverSocket.send(input.value);
 }
 
+writeOutput('Test a really really really really long line a really long line a really long line a really long line a really long line a really long line a really long line.');

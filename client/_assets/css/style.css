@@ -1,0 +1,16 @@
+body{
+	font: 12px "monospace";
+	color: #FFF;
+	background: #000;
+}
+p{
+	margin: 0 0 1em 0;
+}
+input{
+	border: 0 none;
+	padding: 4px 0 3px 2px;
+	width: 100%;
+	color: #000;
+	background: #CCC;
+}
+

@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="text/javascript" src="client.js"></script>
+		<title>nodeMUD</title>
+		<link rel="stylesheet" href="_assets/css/reset.css" />
+		<link rel="stylesheet" href="_assets/css/style.css" />
 	</head>
 	<body>
-		<div id="output" style="height:600px; width:800px; overflow:scroll;">
-        		Chat
+		<div id="output">
 		</div>
-		<form action="javascript:inputSubmit()" id="command_form">
-			<input id="command_line" type="text" />
-		</form>
+		<div id="input">
+			<form action="javascript:inputSubmit()" id="command_form">
+				<input id="command" type="text" />
+			</form>
+		</div>
 	</body>
+	<script src="client.js"></script>
 </html>
+
