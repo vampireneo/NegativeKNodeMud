@@ -1,4 +1,5 @@
 var server = require("./server");
-var world = require("./world");
+var db = require("./db");
 
-server.start(world);
+db.start();
+server.start(db);
