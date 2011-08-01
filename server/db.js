@@ -13,7 +13,7 @@ collectionNames = ["users", "areas", "rooms", "mobs"];
 
 function start(serverCallback) {
 	db = new mongo.Db("mud", new mongo.Server("127.0.0.1", 27017, 
-	{auto_reconnect:true}), {});
+	  {auto_reconnect:true}), {});
 
 	db.open(function(err, db) {
 		if(err) {
@@ -36,56 +36,31 @@ function openedDb(user, password, serverCallback) {
 			log.print(0, "ERR: Failed to authenticate to database.");
 		}
 
-		authedDb(result, serverCallback);
+		authedDb(serverCallback);
 	});
 }
 
-function authedDb(err, result, serverCallback) {
+function authedDb(serverCallback) {
 	//gatherCollections(collectionNames, collections, serverCallback);
-	db.collections(function (err, collectionRefs) {
-		collections = collectionRefs;
+	db.collections(function (err, allCollections) {
+		for (var i = 0; i < allCollections.length; i++) {
+			var dbName, collectionName;
+
+			dbName = allCollections[i].db.databaseName;
+			collectionName = allCollections[i].collectionName;
+
+			if (dbName == 'mud') {
+				collections[collectionName] = allCollections[i];
+			}
+		}
 
 		exportExports(collections);
 		serverCallback();
 	});
 }
 
-/*
-function gatherCollections(oldNameList, collections, serverCallback) {
-	var name, nameList;
-
-	nameList = oldNameList;
-	name = nameList.pop();
-
-	db.collection(name, function(err, newCollection) {
-		if(err) {
-			var logMsg;
-
-			logMsg = "ERR: Failed to access collection.\n" + err;
-			log.print(0, logMsg);
-		}
-		else if(!newCollection) {
-			var logMsg;
-
-			logMsg = "ERR: Null collection returned.";
-			log.print(0, logMsg);
-		}
-
-		collections[name] = newCollection;
-
-		if(nameList.length > 0) {
-			gatherCollections(nameList, collections);
-		}
-		else {
-			exportExports(collections);
-			serverCallback(collections);
-		}
-	});
-}
-*/
-
 function exportExports(collections) {
-	exports.collections;
+	exports.collections = collections;
 }
 
 exports.start = start;

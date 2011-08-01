@@ -2,6 +2,7 @@ var websocket = require("websocket-server");
 
 function Machine(usersColl, log, connection) {
 	this.log = log;
+	this.usersColl = usersColl;
 	this.authenticated = false;
 	this.connection = connection;
 
@@ -29,7 +30,7 @@ Machine.prototype.lookupUser = function(credentials) {
 
 	valid = false;
 
-	this.users.findOne(credentials.user, function(err, document) {
+	this.usersColl.findOne(credentials.user, function(err, document) {
 		if(err) {
 			var logMsg;
 
@@ -38,20 +39,6 @@ Machine.prototype.lookupUser = function(credentials) {
 			log(1, logMsg);
 		}
 	});
-
-	/*
-	if(credentials == "tester:password") {
-		valid = true;
-	}
-
-	if (valid) {
-		// Add a new user object to the world.
-		this.authenticated = true;
-	}
-	else {
-		this.connection.reject("Invalid username or password.");
-	}
-	*/
 }
 
 function start(log, usersColl) {
@@ -62,7 +49,7 @@ function start(log, usersColl) {
 	socketServer.addListener("connection", function(connection) {
 		var inputState;
 
-		inputState = new Machine(db, log, connection);
+		inputState = new Machine(usersColl, log, connection);
 
 		connection.addListener("message", function(message) {
 			inputState.parseInput(message);
