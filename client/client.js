@@ -1,33 +1,35 @@
-var serverSocket, message, output;
+(function($) {
+	var serverSocket = new WebSocket("ws:192.168.1.2:4000");
 
-output = document.getElementById("output");
+	serverSocket.onopen = function(event) {
+		writeOutput("Connection opened.");
+	};
 
-serverSocket = new WebSocket("ws:192.168.1.2:4000");
-	
-message = "Stuff";
+	serverSocket.onmessage = function(event) {
+		writeOutput("Message: " + event.data);
+	};
 
-serverSocket.onopen = function(event) {
-	writeOutput("Connected.");
-	serverSocket.send("A user connected.");
-};
+	serverSocket.onclose = function(event) {
+		writeOutput("Connection closed.");
+	};
 
-serverSocket.onmessage = function(event) {
-	writeOutput("Message: " + event.data);
-};
+	function writeOutput(message) {
+		var element = $("<p>" + message + "</p>");
+		$("#output").append(element);
+	}
 
-serverSocket.onclose = function(event) {
-	writeOutput("Connection closed.");
-};
+	//prevent the form from submitting
+	$("#input form").bind("submit", function(e){
+		e.preventDefault();
+	});
 
-function writeOutput(message) {
-	element = document.createElement("p");
-	element.innerHTML = message;
-	output.appendChild(element);
-}
+	//bind keypress to input submission
+	$("#input input").bind("keypress", function(e){
+		if (e.keyCode == 13) {
+			serverSocket.send($(this).val());
+			$(this).select();
+		}
+	});
 
-function inputSubmit() {
-	input = document.getElementById("input");
-
-	serverSocket.send(input.value);
-}
+})(jQuery);
 
