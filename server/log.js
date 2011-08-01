@@ -2,8 +2,12 @@
 var LOG_LEVEL = 2;
 
 function print(errorLevel, msg) {
-	if(errorLevel <= LOG_LEVEL) {
+	if (errorLevel <= LOG_LEVEL) {
 		console.error(msg);
+	}
+
+	if (errorLevel == 0) {
+		process.exit(1);
 	}
 }
 
