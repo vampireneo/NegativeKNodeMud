@@ -1,9 +1,9 @@
 var websocket = require("websocket-server");
 
-function Machine(socketServer, connection) {
-	this.socketServer = socketServer;
-	this.connection = connection;
+function Machine(usersColl, log, connection) {
+	this.log = log;
 	this.authenticated = false;
+	this.connection = connection;
 
 	this.welcome();
 }
@@ -17,19 +17,29 @@ Machine.prototype.parseInput = function(msg) {
 	// This might not be the best way to go about it. Think about having a
 	// nextFunction variable instead?
 	if (!this.authenticated) {
-		this.authUser(msg);
+		this.lookupUser(msg);
 	}
 	else {
 		this.connection.send(msg);
 	}
 }
 
-Machine.prototype.authUser = function(credentials) {
+Machine.prototype.lookupUser = function(credentials) {
 	var valid;
 
 	valid = false;
 
-	// Will need to be reworked when dealing with DB and callback.
+	this.users.findOne(credentials.user, function(err, document) {
+		if(err) {
+			var logMsg;
+
+			logMsg = "Warning: Error looking up user '" + credentials.user +
+			  "' in database.\n" + err;
+			log(1, logMsg);
+		}
+	});
+
+	/*
 	if(credentials == "tester:password") {
 		valid = true;
 	}
@@ -41,9 +51,10 @@ Machine.prototype.authUser = function(credentials) {
 	else {
 		this.connection.reject("Invalid username or password.");
 	}
+	*/
 }
 
-function start(log, db) {
+function start(log, usersColl) {
 	var socketServer;
 
 	socketServer = websocket.createServer();
@@ -51,7 +62,7 @@ function start(log, db) {
 	socketServer.addListener("connection", function(connection) {
 		var inputState;
 
-		inputState = new Machine(socketServer, connection);
+		inputState = new Machine(db, log, connection);
 
 		connection.addListener("message", function(message) {
 			inputState.parseInput(message);
