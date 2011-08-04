@@ -10,7 +10,7 @@
 	};
 
 	serverSocket.onclose = function(event) {
-		writeOutput("Connection closed.");
+		writeOutput("Connection closed: " + event.data);
 	};
 
 	function writeOutput(message) {
