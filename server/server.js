@@ -1,6 +1,6 @@
 var websocket = require("websocket-server");
 
-function start(log, Machine, usersColl) {
+function start(log, Machine) {
 	var socketServer;
 
 	socketServer = websocket.createServer();
