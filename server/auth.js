@@ -67,7 +67,7 @@ function validateUser(credentials, document, parserMachine) {
 
 		if (hashedPass == document.password) {
 			authCode = 1;
-			logMsg = credentials.user + " successfully authenticated.";
+			logMsg = "User successfully authenticated.\n\t" + credentials.user;
 		}
 		else {
 			authCode = 0;
