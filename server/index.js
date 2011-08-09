@@ -1,7 +1,9 @@
 var log = require("./log");
-var server = require("./server");
 var db = require("./db");
+var parser = require("./parser");
+var server = require("./server");
 
 db.start(function() {
-	server.start(log, db.collections["users"]);
+	parser.start(db);
+	server.start(log, parser.Machine, db.collections["users"]);
 });
