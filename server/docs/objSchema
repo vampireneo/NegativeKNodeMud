@@ -1,0 +1,39 @@
+{
+	file: "index.js",
+},
+{
+	file: "server.js",
+	functions: ["start"],
+},
+{
+	file: "db.js",
+	functions: ["start", "openedDb", "authedDb", "userNameLookup", "findOne",
+			    "exportExports"],
+},
+{
+	file: "parser.js",
+	functions: ["start"],
+	Machine: {
+		functions: ["welcome", "parseInput", "authResults"],
+	},
+},
+{
+	file: "auth.js",
+	functions: ["authUser", "lookupUser", "validateUser"]
+},
+{
+	file: "world.js",
+	World: {
+		Area: {
+			Room: { },
+			Mob: { },
+		},
+		Object: { },
+		Player: { },
+	},
+},
+{
+	file: "user.js",
+	User: {
+	},
+},
