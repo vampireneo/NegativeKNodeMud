@@ -3,6 +3,7 @@ var websocket = require("websocket-server");
 function start(log, Machine) {
 	var socketServer;
 
+	// This needs to be SSLized.
 	socketServer = websocket.createServer();
 
 	socketServer.addListener("connection", function(connection) {
