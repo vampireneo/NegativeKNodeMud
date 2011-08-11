@@ -3,7 +3,7 @@ var websocket = require("websocket-server");
 function start(log, Machine) {
 	var socketServer;
 
-	// This needs to be SSLized.
+	// This needs to get SSLizard.
 	socketServer = websocket.createServer();
 
 	socketServer.addListener("connection", function(connection) {
