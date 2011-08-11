@@ -27,11 +27,14 @@ Machine.prototype.parseInput = function(msg) {
 	}
 }
 
-// Expects: [returnCode, logMessage, userMessage]
-// returnCode:
-//		1 => Successful auth.
-//		0 => Invalid password.
-//		-1 => Invalid username.
+/* Parameters
+ *	returnCode:
+ *		 1 => Successful auth.
+ *		 0 => Invalid password.
+ *		-1 => Invalid username.
+ *	logMsg: Message to print to log.
+ *	userMsg: Message to print to user.
+ */
 Machine.prototype.authResults = function(returnCode, logMsg, userMsg) {
 	log.print(returnCode + 2, logMsg);
 
