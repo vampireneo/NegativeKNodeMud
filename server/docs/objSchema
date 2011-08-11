@@ -37,3 +37,8 @@
 	User: {
 	},
 },
+{
+	file: "mechanics.js",
+	Dice: {
+	},
+}
