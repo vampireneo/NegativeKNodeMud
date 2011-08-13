@@ -16,7 +16,7 @@ function Dice(diceString) {
 
 	diceParams = this.diceString.split('+');
 	
-	for (var chunk in diceParams) {
+	for each (var chunk in diceParams) {
 		var dieParts, formatError;
 
 		formatError = false;
@@ -31,7 +31,7 @@ function Dice(diceString) {
 			}
 		}
 		else if (dieParts.length == 2) {
-			if (/^\d+$/.test(dieParts[0]) && /^\d+$/test(dieParts[1])) {
+			if (/^\d+$/.test(dieParts[0]) && /^\d+$/.test(dieParts[1])) {
 				this.diceToRoll.push([dieParts[0], dieParts[1]]);
 			}
 			else {
@@ -54,35 +54,39 @@ function Dice(diceString) {
 Dice.prototype.roll = function() {
 	var rollSum;
 
-	rollSum = bonus;
+	rollSum = this.bonus;
 
-	for (var dieArray in diceToRoll) {
+	for (var dieArray in this.diceToRoll) {
 		for (var i = 0; i < dieArray[0]; i++) {
 			rollSum += Math.floor(Math.random()*dieArray[1]) + 1;
 		}
 	}
 
 	return(rollSum);
-}
+};
 
 Dice.prototype.minRoll = function() {
 	var minSum;
 
-	minSum += bonus;
+	minSum = this.bonus;
 
-	for (var dieArray in diceToRoll) {
+	for (var dieArray in this.diceToRoll) {
 		minSum += dieArray[0];
 	}
 
 	return(minSum);
-}
+};
 
 Dice.prototype.maxRoll = function() {
 	var maxSum;
 
-	for (var dieArray in diceToRoll) {
+	maxSum = this.bonus;
+
+	for (var dieArray in this.diceToRoll) {
 		maxSum += dieArray[0]*dieArray[1];
 	}
 
 	return(maxSum);
-}
+};
+
+exports.Dice = Dice;
