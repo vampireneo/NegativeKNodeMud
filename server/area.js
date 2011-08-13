@@ -25,27 +25,15 @@ function Area(name, minLevel, maxLevel, minVNum, maxVNum, areaBuilder) {
  *	dmgDice: Dice object.
  *	dmgType: String; Type of damage (description and mechanical type dealt to 
  *		attacked.
+ *	
  */
-// Holy crap. Fix this parameter list.
-// Also, finish this parameter list.
-function Mob(vNum, nameList, shortDesc, longDesc, lookDesc, race, actionFlags, affectFlags, alignment, mobGroup, level, hitBonus, hitDice, manaDice, dmgDice, dmgType, 
-) {
-	this.vNum = vNum;
-	this.nameList = [nameList];
-	this.shortDesc = shortDesc;
-	this.longDesc = longDesc;
-	this.lookDesc = lookDesc;
-	this.race = race;
-	this.actionFlags = actionFlags;
-	this.affectFlags = affectFlags;
-	this.alignment = alignment
-	this.mobGroup = mobGroup;
-	this.level = level;
-	this.hitBonus = hitBonus
-	this.hitDice  = hitDice;
-	this.manaDice  = manaDice;
-	this.dmgDice  = dmgDice;
-	this.dmgType = dmgType;
+// Finish this parameter list.
+function Mob(paramObject) {
+	for (var property in paramNames) {
+		if (params.hasOwnProperty(property)) {
+			this[property] = paramObject[property];
+		}
+	} 
 }
 
 function Object() {
