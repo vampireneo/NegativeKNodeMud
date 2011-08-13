@@ -13,7 +13,7 @@ function Machine(connection) {
 Machine.prototype.welcome = function() {
 	this.connection.send("Welcome to nodeMud. Beware of falling rocks.");
 	this.connection.send("Login: ");
-}
+};
 
 Machine.prototype.parseInput = function(msg) {
 	// This might not be the best way to go about it. Think about having a
@@ -25,7 +25,7 @@ Machine.prototype.parseInput = function(msg) {
 	else {
 		this.connection.send(msg);
 	}
-}
+};
 
 /* Parameters
  *	returnCode:
@@ -44,7 +44,7 @@ Machine.prototype.authResults = function(returnCode, logMsg, userMsg) {
 	else if (0 <= returnCode) {
 		this.connection.close(userMsg);
 	}
-}
+};
 
 function start(passedDb) {
 	db = passedDb;
