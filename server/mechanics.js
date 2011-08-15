@@ -1,30 +1,60 @@
-// Talk about completely untested..
+var roll = function(bonus, diceToRoll) {
+	var rollSum, index, dieArray, i;
 
-/* Parameters
- *	bonus: Constant added to the dice rolled.
- *	diceToRoll: Array of number of dice, number of side array pairs.
- *
- * Example: new Dice(50, [[2, 4], [5, 10]]); creats a dice object that will roll
- *	"50 + 2d4 + 5d10".
- */
-function Dice(diceString) {
-	var diceParams;
+	rollSum = bonus;
 
-	this.diceString = diceString;
-	this.bonus = 0;
-	this.diceToRoll = new Array();
+	for (index in diceToRoll) {
+		dieArray = diceToRoll[index];
 
-	diceParams = this.diceString.split('+');
+		for (i = 0; i < dieArray[0]; i++) {
+			rollSum += Math.floor(Math.random()*dieArray[1]) + 1;
+		}
+	}
+
+	return(rollSum);
+};
+
+var minRoll = function(bonus, diceToRoll) {
+	var minSum, index;
+
+	minSum = bonus;
+
+	for (index in diceToRoll) {
+		minSum += +diceToRoll[index][0];
+	}
+
+	return(minSum);
+};
+
+var maxRoll = function(bonus, diceToRoll) {
+	var maxSum, index, dieArray;
+
+	maxSum = bonus;
+
+	for (index in diceToRoll) {
+		dieArray = diceToRoll[index];
+		maxSum += dieArray[0]*dieArray[1];
+	}
+
+	return(maxSum);
+};
+
+var parseDiceString = function(diceString) {
+	var diceParams, index, chunk, formatError, dieParts, bonus, diceToRoll; 
+
+	diceToRoll = new Array();
+	bonus = 0;
+	diceParams = diceString.split('+');
 	
-	for each (var chunk in diceParams) {
-		var dieParts, formatError;
+	for (index in diceParams) {
+		chunk = diceParams[index];
 
 		formatError = false;
 		dieParts = chunk.split('d');
 
 		if (dieParts.length == 1) {
 			if (/^\d+$/.test(dieParts[0])) {
-				this.bonus += dieParts[0];
+				bonus += +dieParts[0];
 			}
 			else {
 				formatError = true;
@@ -32,7 +62,8 @@ function Dice(diceString) {
 		}
 		else if (dieParts.length == 2) {
 			if (/^\d+$/.test(dieParts[0]) && /^\d+$/.test(dieParts[1])) {
-				this.diceToRoll.push([dieParts[0], dieParts[1]]);
+				diceToRoll[diceToRoll.length] = 
+				  new Array(+dieParts[0], +dieParts[1]);
 			}
 			else {
 				formatError = true;
@@ -47,46 +78,41 @@ function Dice(diceString) {
 		throw("Unable to parse " + diceString);
 	}
 
+	return([bonus, diceToRoll]);
+};
+
+/* Parameters
+ *	diceString: Bonuses and dice to roll, in standard gamer format.
+ * Example: "5+2d6+6+1d2"
+ * TODO: Support negative bonuses.
+ */
+function Dice(diceString) {
+	var parseResults;
+
+	parseResults = parseDiceString(diceString);
+
+	this.diceString = diceString;
+	this.bonus = parseResults[0];
+	this.diceToRoll = parseResults[1];
+
+	this.roll = function() {
+		return(roll(this.bonus, this.diceToRoll));
+	};
+
+	this.minRoll = function() {
+		return(minRoll(this.bonus, this.diceToRoll));
+	};
+
+	this.maxRoll = function() {
+		return(maxRoll(this.bonus, this.diceToRoll));
+	};
+
+
 	this.min = this.minRoll();
 	this.max = this.maxRoll();
 }
 
-Dice.prototype.roll = function() {
-	var rollSum;
-
-	rollSum = this.bonus;
-
-	for (var dieArray in this.diceToRoll) {
-		for (var i = 0; i < dieArray[0]; i++) {
-			rollSum += Math.floor(Math.random()*dieArray[1]) + 1;
-		}
-	}
-
-	return(rollSum);
-};
-
-Dice.prototype.minRoll = function() {
-	var minSum;
-
-	minSum = this.bonus;
-
-	for (var dieArray in this.diceToRoll) {
-		minSum += dieArray[0];
-	}
-
-	return(minSum);
-};
-
-Dice.prototype.maxRoll = function() {
-	var maxSum;
-
-	maxSum = this.bonus;
-
-	for (var dieArray in this.diceToRoll) {
-		maxSum += dieArray[0]*dieArray[1];
-	}
-
-	return(maxSum);
-};
-
 exports.Dice = Dice;
+exports.roll = roll;
+exports.minRoll = minRoll;
+exports.maxRoll = maxRoll;
