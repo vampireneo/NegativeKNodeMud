@@ -1,5 +1,5 @@
 (function($) {
-	var serverSocket = new WebSocket("ws:192.168.1.2:4000");
+	var serverSocket = new WebSocket("ws:localhost:4000");
 
 	serverSocket.onopen = function(event) {
 		writeOutput("Connection opened.");
