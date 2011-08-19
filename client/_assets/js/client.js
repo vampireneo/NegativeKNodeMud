@@ -17,8 +17,7 @@
 			*/
 			commandHandle: function(line, report) {
 				if (line != '') {
-					controller.continuedPrompt = false;
-					return [{msg: "Execute: " + line}];
+					serverSocket.send(line);
 				}
 				return true;
 			},
