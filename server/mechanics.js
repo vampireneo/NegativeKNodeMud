@@ -1,3 +1,10 @@
+/* Parameters:
+ *	bonus: Additive bonus to die rolls.
+ *	diceToRoll: Array of [number of dice, number of sides]
+ *
+ * Returns
+ *	rollSum: Sum of bonus and die roll results.
+ */
 var roll = function(bonus, diceToRoll) {
 	var rollSum, index, dieArray, i;
 
@@ -14,6 +21,13 @@ var roll = function(bonus, diceToRoll) {
 	return(rollSum);
 };
 
+/* Parameters
+ *	bonus: Additive bonus to die rolls.
+ *	diceToRoll: Array of [number of dice, number of sides]
+ *
+ * Returns
+ *	minSum: Minimum possible roll.
+ */
 var minRoll = function(bonus, diceToRoll) {
 	var minSum, index;
 
@@ -26,6 +40,13 @@ var minRoll = function(bonus, diceToRoll) {
 	return(minSum);
 };
 
+/* Parameters
+ *	bonus: Additive bonus to die rolls.
+ *	diceToRoll: Array of [number of dice, number of sides]
+ *
+ * Returns
+ *	maxSum: Maximum possible roll.
+ */
 var maxRoll = function(bonus, diceToRoll) {
 	var maxSum, index, dieArray;
 
@@ -39,20 +60,30 @@ var maxRoll = function(bonus, diceToRoll) {
 	return(maxSum);
 };
 
+/* Parameters
+ *	diceString: String formatted in standard RPG manner. Example: 100+3d4.
+ *
+ * Returns
+ *	bonus: Additive bonus to die rolls.
+ *	diceToRoll: Array of [number of dice, number of sides]
+ *
+ * TODO:
+ *	Modify diceString.split('+') to support negative bonuses.
+ */
 var parseDiceString = function(diceString) {
 	var diceParams, index, chunk, formatError, dieParts, bonus, diceToRoll; 
 
 	diceToRoll = new Array();
 	bonus = 0;
+	formatError = false;
 	diceParams = diceString.split('+');
 	
-	for (index in diceParams) {
+	for (var index = 0; index < diceParams.length; index++) {
 		chunk = diceParams[index];
 
-		formatError = false;
 		dieParts = chunk.split('d');
 
-		if (dieParts.length == 1) {
+		if (dieParts !== undefined && dieParts.length === 1) {
 			if (/^\d+$/.test(dieParts[0])) {
 				bonus += +dieParts[0];
 			}
@@ -60,10 +91,13 @@ var parseDiceString = function(diceString) {
 				formatError = true;
 			}
 		}
-		else if (dieParts.length == 2) {
+		else if (dieParts.length === 2) {
 			if (/^\d+$/.test(dieParts[0]) && /^\d+$/.test(dieParts[1])) {
+				// Since this can result in things like [[1, 4], [1, 4]]
+				// instead of [[2, 4]], it's inefficient -- but probably not
+				// enough to matter. ...Right?
 				diceToRoll[diceToRoll.length] = 
-				  new Array(+dieParts[0], +dieParts[1]);
+				  new Array(dieParts[0], dieParts[1]);
 			}
 			else {
 				formatError = true;
@@ -73,18 +107,15 @@ var parseDiceString = function(diceString) {
 			formatError = true;
 		}
 	}
-
 	if (formatError) {
-		throw("Unable to parse " + diceString);
+		throw(new Error("Unable to parse " + diceString));
 	}
 
 	return([bonus, diceToRoll]);
 };
 
 /* Parameters
- *	diceString: Bonuses and dice to roll, in standard gamer format.
- * Example: "5+2d6+6+1d2"
- * TODO: Support negative bonuses.
+ *	diceString: String formatted in standard RPG manner. Example: 100+3d4.
  */
 function Dice(diceString) {
 	var parseResults;
@@ -116,3 +147,4 @@ exports.Dice = Dice;
 exports.roll = roll;
 exports.minRoll = minRoll;
 exports.maxRoll = maxRoll;
+exports.parseDiceString = parseDiceString;
