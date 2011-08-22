@@ -1,41 +1,89 @@
-/* Parameters
- *	paramList: Array; Strings for parameter names.
- *	params: Passed object containing only parameters.
- */
-var listToObj(paramList, params) {
-	var objReturn;
-
-	paramList.forEach(function(value) {
-		if (params[value] === undefined) {
-			throw("Object parameter " + value + " is undefined.");
-		}
-		else {
-			objReturn[value] = params[value];
-		}
-	});
-
-	return(objReturn);
-}
-
 /* Parameters (Object)
+ *	builder: String; Name of the area's builder.
  *	areaName: String; Area name, as will be visible by the area command.
  *	filename: String; Filename for the area to be saved in.
- *	levelRange: Array; Suggested minimum and maximum levels for the area.
- *	vNumRange: Array: Range of area's vnums.
- *	builder: String; Name of the area's builder.
+ *	vNumRange: Array of Integers: Range of area's vnums. Example: [6, 20].
+ *	levelRange: Array of Integers; Suggested minimum and maximum levels for
+ *		the area. Example: [3, 15].
  */
-function Area(params) {
-	var paramList;
+var areaConstructor = function (paramObject) {
+	var that, areaName, filename, levelRange, vNumRange, builder;
 
-	paramList = [
-					"areaName", "filename"
-				  , "levelRange", "builder"
-				  , "vNumRange"
-				];
+	that = {};
 
-// This won't work if you want methods.
-	this = listToObj(paramList);
-}
+	builder = paramObject.builder;
+	areaName = paramObject.areaName;
+	filename = paramObject.filename;
+	vNumRange = paramObject.vNumRange;
+	levelRange = paramObject.levelRange;
+
+	that.getBuilder = function() {
+		return(builder);
+	};
+
+	that.getAreaName = function() {
+		return(areaName);
+	};
+
+	that.getFilename = function() {
+		return(filename);
+	};
+
+	that.getVNumRange = function() {
+		return(vNumRange);
+	};
+
+	that.getLevelRange = function() {
+		return(levelRange);
+	};
+
+	that.setBuilder = function(newBuilder) {
+		if (newBuilder !== undefined && typeof(newBuilder) === "string") {
+			builder = newBuilder;
+		}
+		else {
+			throw(new Error("Poorly defined parameter: " + newBuilder));
+		}
+	};
+
+	that.setAreaName = function(newAreaName) {
+		if (newAreaName !== undefined && typeof(newAreaName) === "string") {
+			areaName = newAreaName;
+		}
+		else {
+			throw(new Error("Poorly defined paramete: " + newAreaName));
+		}
+	};
+
+	that.setFilename = function(newFilename) {
+		if (newFilename !== undefined && typeof(newFilename) === "string") {
+			filename = newFilename;
+		}
+		else {
+			throw(new Error("Poorly defined paramete: " + newFilename));
+		}
+	};
+
+	that.setVNumRange = function(newVNumRange) {
+		if (newVNumRange !== undefined && Array.isArray(newVNumRange)) {
+			vNumRange = newVNumRange;
+		}
+		else {
+			throw(new Error("Poorly defined paramete: " + newVNumRange));
+		}
+	};
+
+	that.setLevelRange = function(newLevelRange) {
+		if (newLevelRange !== undefined && Array.isArray(newLevelRange)) {
+			levelRange = newLevelRange;
+		}
+		else {
+			throw(new Error("Poorly defined parameter: " + newLevelRange));
+		}
+	};
+
+	return(that);
+};
 
 /* Parameters
  *	vNum: Integer; Area virtual number of mob.
@@ -63,27 +111,63 @@ function Mob(paramObject) {
 	var paramList;
 
 	paramList = [
-					"nameList", "shortDesc"
-				  , "longDesc", "lookDesc"
-				  , "race", "actionFlags"
-				  , "affectFlags", "alignment"
-				  , "mobGroup", "level"
-				  , "hitBonus", "hitDice"
-				  , "manaDice", "dmgDice"
-				  , "dmgType"
+				  "nameList"
+				, "shortDesc"
+				, "longDesc"
+				, "lookDesc"
+				, "race"
+				, "actionFlags"
+				, "affectFlags"
+				, "alignment"
+				, "mobGroup"
+				, "level"
+				, "hitBonus"
+				, "hitDice"
+				, "manaDice"
+				, "dmgDice"
+				, "dmgType"
 				];
 
-	this = listToObj(paramList);
+	this = listToObj(paramList, paramObject);
+}
+
+/* Parameters (Object)
+ *	vNum: Integer; Unique vnum for the room.
+ *	header: String; Short label of the room. Players with 'brief' mode on will
+ *		see only this.
+ *	description: String; Room description, 3-10ish lines (for style.)
+ *	flags: Array of Chars; Room flags. Each is a single char from
+ *		['A', 'C', 'D', 'J', 'K', 'L', 'M', 'N']
+ *	sectorType: Integer; Type of sector (for environmental effects.)
+ *	exits: Array of exit objects.
+ *	extras: Array of roomExtra objects.
+ *	manaAdjust: Integer 1-200; Percentage adjuster to mana recovery rate. 100
+ *		is normal.
+ *	healAdjust: Integer 1-200; Percentage adjuster to heal recovery rate. 100
+ *		is normal.
+ *	clans: Array of Strings; Clans which are allowed access.
+ */
+function Room(paramObject) {
+	var paramList;
+
+	paramList = [
+				  "vNum"
+				, "header"
+				, "description"
+				, "flags"
+				, "sectorType"
+				, "exits"
+				, "extras"
+				, "manaAdjust"
+				, "healAdjust"
+				, "clans"
+				];
+
+	this = listToObj(paramList, paramObject);
 }
 
 //function Object() {
 //}
-
-function Room(id) {
-	this.id = id;
-	this.title = "";
-	this.description = "";
-}
 
 function Reset() {
 }
@@ -93,3 +177,5 @@ function Shop() {
 
 function Special() {
 }
+
+exports.areaConstructor = areaConstructor;
