@@ -35,7 +35,7 @@ var testRoll = function(test) {
 	test.done();
 
 	Math.random = oldRandom;
-}
+};
 
 var testMinRoll = function(test) {
 	test.deepEqual(mechanics.minRoll(6, [[2, 6], [1, 7]]), 9);
@@ -54,8 +54,6 @@ var testParseDiceString = function(test) {
 	test.deepEqual(mechanics.parseDiceString("1d6+15"), [15, [[1, 6]]]);
 	test.deepEqual(mechanics.parseDiceString("1d6+15+2d6+15+3d6+15+4d6+15"),
 			[60, [[1, 6], [2, 6], [3, 6], [4, 6]]]);
-	//test.throws(mechanics.parseDiceString("0+", "Unable to parse 0+",
-			//"Failed to throw error on invalid diceString."));
 	test.throws(function () {
 		mechanics.parseDiceString("0+")
 	});
@@ -66,9 +64,42 @@ var testParseDiceString = function(test) {
 		mechanics.parseDiceString("0+2d3d4")
 	});
 	test.done();
-}
+};
+
+var testDice = function(test) {
+	var testDie, i, rollResult;
+
+	testDie = mechanics.dieConstructor("0+4d7");
+	test.strictEqual(testDie.getMinRoll(), 4);
+	test.strictEqual(testDie.getMaxRoll(), 28);
+
+	for (i = 0; i < 100; i++) {
+		rollResult = testDie.roll();
+
+		test.ok(rollResult >= 4, "rollResult is not >= 4: " + rollResult +
+				"; iteration number " + i + ".");
+		test.ok(rollResult <= 28, "rollResult is not <= 28: " + rollResult +
+				"; iteration number " + i + ".");
+	}
+
+	testDie = mechanics.dieConstructor("5+1d12");
+	test.strictEqual(testDie.getMinRoll(), 6);
+	test.strictEqual(testDie.getMaxRoll(), 17);
+	
+	for (i = 0; i < 100; i++) {
+		rollResult = testDie.roll();
+
+		test.ok(rollResult >= 6, "rollResult is not >= 6: " + rollResult +
+				"; iteration number " + i + ".");
+		test.ok(rollResult <= 17, "rollResult is not <= 17: " + rollResult +
+				"; iteration number " + i + ".");
+	}
+
+	test.done();
+};
 
 exports.testRoll = testRoll;
 exports.testMinRoll = testMinRoll;
 exports.testMaxRoll = testMaxRoll;
 exports.testParseDiceString = testParseDiceString;
+exports.testDice = testDice;
