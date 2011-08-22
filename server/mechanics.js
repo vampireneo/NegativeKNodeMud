@@ -117,30 +117,37 @@ var parseDiceString = function(diceString) {
 /* Parameters
  *	diceString: String formatted in standard RPG manner. Example: 100+3d4.
  */
-function Dice(diceString) {
-	var parseResults;
+function Dice(paramDiceString) {
+	var that, diceString, bonus, diceToRoll, min, max;
 
-	parseResults = parseDiceString(diceString);
+	that.setDiceString = function(paramDiceString) {
+		var parseResults;
 
-	this.diceString = diceString;
-	this.bonus = parseResults[0];
-	this.diceToRoll = parseResults[1];
+		parseResults = parseDiceString(paramDiceString);
 
-	this.roll = function() {
-		return(roll(this.bonus, this.diceToRoll));
+		diceString = diceString;
+		bonus = parseResults[0];
+		diceToRoll = parseResults[1];
+
+		min = this.minRoll();
+		max = this.maxRoll();
+	}
+
+	that.roll = function() {
+		return(roll(bonus, diceToRoll));
 	};
 
-	this.minRoll = function() {
-		return(minRoll(this.bonus, this.diceToRoll));
+	that.getMinRoll = function() {
+		return(min);
 	};
 
-	this.maxRoll = function() {
-		return(maxRoll(this.bonus, this.diceToRoll));
+	that.getMaxRoll = function() {
+		return(max);
 	};
 
+	that.setDiceString(paramDiceString);
 
-	this.min = this.minRoll();
-	this.max = this.maxRoll();
+	this = that;
 }
 
 exports.Dice = Dice;
