@@ -73,7 +73,7 @@ var maxRoll = function(bonus, diceToRoll) {
 var parseDiceString = function(diceString) {
 	var diceParams, index, chunk, formatError, dieParts, bonus, diceToRoll; 
 
-	diceToRoll = new Array();
+	diceToRoll = [];
 	bonus = 0;
 	formatError = false;
 	diceParams = diceString.split('+');
@@ -120,6 +120,8 @@ var parseDiceString = function(diceString) {
 function Dice(paramDiceString) {
 	var that, diceString, bonus, diceToRoll, min, max;
 
+	that = {};
+
 	that.setDiceString = function(paramDiceString) {
 		var parseResults;
 
@@ -129,9 +131,9 @@ function Dice(paramDiceString) {
 		bonus = parseResults[0];
 		diceToRoll = parseResults[1];
 
-		min = this.minRoll();
-		max = this.maxRoll();
-	}
+		min = minRoll(bonus, diceToRoll);
+		max = maxRoll(bonus, diceToRoll);
+	};
 
 	that.roll = function() {
 		return(roll(bonus, diceToRoll));
@@ -147,7 +149,7 @@ function Dice(paramDiceString) {
 
 	that.setDiceString(paramDiceString);
 
-	this = that;
+	return that;
 }
 
 exports.Dice = Dice;
