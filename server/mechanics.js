@@ -117,7 +117,7 @@ var parseDiceString = function(diceString) {
 /* Parameters
  *	diceString: String formatted in standard RPG manner. Example: 100+3d4.
  */
-function Dice(paramDiceString) {
+var dieConstructor = function(paramDiceString) {
 	var that, diceString, bonus, diceToRoll, min, max;
 
 	that = {};
@@ -152,7 +152,7 @@ function Dice(paramDiceString) {
 	return that;
 }
 
-exports.Dice = Dice;
+exports.dieConstructor = dieConstructor;
 exports.roll = roll;
 exports.minRoll = minRoll;
 exports.maxRoll = maxRoll;
