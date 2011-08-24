@@ -1,3 +1,22 @@
+var areaConstructor;
+var typeCompare;
+
+typeCompare = function(variable0, variable1) {
+	var validType;
+
+	if (Array.isArray(variable0) && Array.isArray(variable1)) {
+		validType = true;
+	}
+	else if (typeof(variable0) === typeof(variable1)) {
+		validType = true;
+	}
+	else {
+		validType = false;
+	}
+
+	return(validType);
+}
+
 /* Parameters (Object)
  *	builder: String; Name of the area's builder.
  *	areaName: String; Area name, as will be visible by the area command.
@@ -6,17 +25,48 @@
  *	levelRange: Array of Integers; Suggested minimum and maximum levels for
  *		the area. Example: [3, 15].
  */
-var areaConstructor = function (paramObject) {
-	var that, areaName, filename, levelRange, vNumRange, builder;
+areaConstructor = function (paramObject) {
+	var that, privateMembers, index;
+	var commonSetterFunction;
 
 	that = {};
 
-	builder = paramObject.builder;
-	areaName = paramObject.areaName;
-	filename = paramObject.filename;
-	vNumRange = paramObject.vNumRange;
-	levelRange = paramObject.levelRange;
+	privateMembers = {
+		  "builder": ""
+		, "areaName": ""
+		, "filename": ""
+		, "vNumRange": []
+		, "levelRange": []
+		};
 
+	setter = function(newVal, index) {
+		if (newVal !== undefined && typeCompare(newVal, index)) {
+			privateMembers[index] = newVal;
+		}
+	};
+
+	for (var index in privateMembers) {
+console.log("index: " + index);
+		(function() {
+console.log("index: " + index);
+			var currVal;
+
+			currVal = privateMembers[index];
+
+			Object.defineProperty(that, index, {
+				get: function() {
+					return(privateMembers[index]);
+				},
+				set: function(newVal) {
+console.log("index: " + index);
+console.log("oldVal: " + currVal + " - newVal: " + newVal);
+					setter(newVal, index);
+				}
+			});
+		})();
+	}
+
+/*
 	that.getBuilder = function() {
 		return(builder);
 	};
@@ -37,6 +87,12 @@ var areaConstructor = function (paramObject) {
 		return(levelRange);
 	};
 
+		if (newLevelRange !== undefined && Array.isArray(newLevelRange)) {
+			levelRange = newLevelRange;
+		}
+		else {
+			throw(new Error("Poorly defined parameter: " + newLevelRange));
+		}
 	that.setBuilder = function(newBuilder) {
 		if (newBuilder !== undefined && typeof(newBuilder) === "string") {
 			builder = newBuilder;
@@ -51,7 +107,7 @@ var areaConstructor = function (paramObject) {
 			areaName = newAreaName;
 		}
 		else {
-			throw(new Error("Poorly defined paramete: " + newAreaName));
+			throw(new Error("Poorly defined parameter: " + newAreaName));
 		}
 	};
 
@@ -81,6 +137,13 @@ var areaConstructor = function (paramObject) {
 			throw(new Error("Poorly defined parameter: " + newLevelRange));
 		}
 	};
+*/
+
+	that.builder = paramObject.builder;
+	that.areaName = paramObject.areaName;
+	that.filename = paramObject.filename;
+	that.vNumRange = paramObject.vNumRange;
+	that.levelRange = paramObject.levelRange;
 
 	return(that);
 };
