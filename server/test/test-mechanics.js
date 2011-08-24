@@ -31,7 +31,6 @@ var testRoll = function(test) {
 	test.deepEqual(mechanics.roll(1, [[-1, 4]]), 1);
 	test.deepEqual(mechanics.roll(1, [[1, -6]]), -1);
 	test.deepEqual(mechanics.roll(0, [[1, 2], [1, 4], [1, 6], [1, 8]]), 14);
-	// Test for appropriate distributions.
 	test.done();
 
 	Math.random = oldRandom;
