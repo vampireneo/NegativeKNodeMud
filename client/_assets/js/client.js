@@ -1,44 +1,40 @@
 (function($) {
 	$(document).ready(function(){
-		var jqueryConsole = $('<div class="console">');
-		$('body').append(jqueryConsole);
+		var serverSocket = new WebSocket("ws:localhost:4000");
 
-		var controller = jqueryConsole.console({
+		var jQueryConsole = $('<div class="console">');
+
+		var controller = jQueryConsole.console({
 			promptLabel: 'nodeMud> ',
 			continuedPromptLabel: '  -> ',
-			/*
-			commandValidate: function(line) {
-				if (line == '') {
-					return false;
-				} else {
-					return true;
-				}
-			},
-			*/
 			commandHandle: function(line, report) {
 				if (line != '') {
 					serverSocket.send(line);
 				}
-				return true;
+				return "command printed";
 			},
 			autofocus: true,
 			animateScroll: true,
 			promptHistory: true
 		});
-		
-		var serverSocket = new WebSocket("ws:localhost:4000");
 
 		serverSocket.onopen = function(event) {
-			controller.promptText('Connection opened.');
+			controller.notice('Connection opened.');
+			controller.scrollToBottom();
 		};
 
 		serverSocket.onmessage = function(event) {
-			controller.promptText(event.data);
+			controller.notice(event.data);
+			controller.scrollToBottom();
 		};
 
 		serverSocket.onclose = function(event) {
-			controller.promptText("Connection closed: " + event.data);
+			controller.notice("Connection closed: " + event.data);
+			controller.scrollToBottom();
 		};
+
+		$('body').append(jQueryConsole);
+		console.log(controller);
 	});
 })(jQuery);
 

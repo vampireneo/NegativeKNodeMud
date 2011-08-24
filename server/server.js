@@ -11,7 +11,7 @@ function start(log, Machine) {
 
 		inputState = new Machine(connection);
 
-		log.print(3, "Accepted connection from <IP>.");
+		log.print(3, "Accepted connection, id: " + connection.id);
 
 		connection.addListener("message", function(message) {
 			inputState.parseInput(message);
@@ -22,3 +22,4 @@ function start(log, Machine) {
 }
 
 exports.start = start;
+
