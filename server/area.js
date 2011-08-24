@@ -39,16 +39,19 @@ areaConstructor = function (paramObject) {
 		, "levelRange": []
 		};
 
-	setter = function(newVal, index) {
-		if (newVal !== undefined && typeCompare(newVal, index)) {
-			privateMembers[index] = newVal;
+	setCheck = function(newVal, privateMembers, index) {
+		var validVar;
+
+		if (newVal !== undefined && typeCompare(newVal, privateMembers[index])) {
+			validVar = true;
+		}
+		else {
+			validVar = false;
 		}
 	};
 
 	for (var index in privateMembers) {
-console.log("index: " + index);
-		(function() {
-console.log("index: " + index);
+		(function(index) {
 			var currVal;
 
 			currVal = privateMembers[index];
@@ -58,86 +61,14 @@ console.log("index: " + index);
 					return(privateMembers[index]);
 				},
 				set: function(newVal) {
-console.log("index: " + index);
-console.log("oldVal: " + currVal + " - newVal: " + newVal);
-					setter(newVal, index);
+					if (setCheck(newVal, privateMembers[index])) {
+						privateMembers[index] = newVal;
+					}
 				}
 			});
-		})();
+		})(index);
 	}
 
-/*
-	that.getBuilder = function() {
-		return(builder);
-	};
-
-	that.getAreaName = function() {
-		return(areaName);
-	};
-
-	that.getFilename = function() {
-		return(filename);
-	};
-
-	that.getVNumRange = function() {
-		return(vNumRange);
-	};
-
-	that.getLevelRange = function() {
-		return(levelRange);
-	};
-
-		if (newLevelRange !== undefined && Array.isArray(newLevelRange)) {
-			levelRange = newLevelRange;
-		}
-		else {
-			throw(new Error("Poorly defined parameter: " + newLevelRange));
-		}
-	that.setBuilder = function(newBuilder) {
-		if (newBuilder !== undefined && typeof(newBuilder) === "string") {
-			builder = newBuilder;
-		}
-		else {
-			throw(new Error("Poorly defined parameter: " + newBuilder));
-		}
-	};
-
-	that.setAreaName = function(newAreaName) {
-		if (newAreaName !== undefined && typeof(newAreaName) === "string") {
-			areaName = newAreaName;
-		}
-		else {
-			throw(new Error("Poorly defined parameter: " + newAreaName));
-		}
-	};
-
-	that.setFilename = function(newFilename) {
-		if (newFilename !== undefined && typeof(newFilename) === "string") {
-			filename = newFilename;
-		}
-		else {
-			throw(new Error("Poorly defined paramete: " + newFilename));
-		}
-	};
-
-	that.setVNumRange = function(newVNumRange) {
-		if (newVNumRange !== undefined && Array.isArray(newVNumRange)) {
-			vNumRange = newVNumRange;
-		}
-		else {
-			throw(new Error("Poorly defined paramete: " + newVNumRange));
-		}
-	};
-
-	that.setLevelRange = function(newLevelRange) {
-		if (newLevelRange !== undefined && Array.isArray(newLevelRange)) {
-			levelRange = newLevelRange;
-		}
-		else {
-			throw(new Error("Poorly defined parameter: " + newLevelRange));
-		}
-	};
-*/
 
 	that.builder = paramObject.builder;
 	that.areaName = paramObject.areaName;
