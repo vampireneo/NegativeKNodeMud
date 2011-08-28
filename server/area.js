@@ -1,13 +1,24 @@
-var areaConstructor;
-var typeCompare;
+/*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
+"use strict";
 
+var typeCompare, getterSetter, setCheck, areaConstructor, mobConstructor,
+	roomConstructor, objConstructor, resetConstructor, shopConstructor,
+	specialConstructor;
+
+/* Parameters
+ *	variable0, variable1: The two variables to compare types of.
+ *
+ * Returns
+ *	validType: True if variables are of the same type. False otherwise.
+ */
 typeCompare = function(variable0, variable1) {
 	var validType;
 
-	if (Array.isArray(variable0) && Array.isArray(variable1)) {
+	if (! (Array.isArray(variable0) || Array.isArray(variable1)) &&
+			typeof(variable0) === typeof(variable1)) {
 		validType = true;
 	}
-	else if (typeof(variable0) === typeof(variable1)) {
+	else if (Array.isArray(variable0) && Array.isArray(variable1)) {
 		validType = true;
 	}
 	else {
@@ -15,7 +26,50 @@ typeCompare = function(variable0, variable1) {
 	}
 
 	return(validType);
-}
+};
+
+/* Parameters
+ *	newVal: New value to set to.
+ *	oldVal: Old value of member.
+ *
+ * Returns
+ *	validVar: Whether newVal is defined and is of the same type.
+ */
+setCheck = function(newVal, oldVal) {
+	var validVar;
+
+	validVar = (undefined !== newVal && typeCompare(newVal, oldVal));
+
+	return validVar;
+};
+
+getterSetter = function(that, memberContainer, index, getter, setter) {
+	var currVal;
+
+	currVal = memberContainer[index];
+
+	if (undefined === getter) {
+		getter = function() {
+			return(memberContainer[index]);
+		};
+	}
+
+	if ( undefined === setter) {
+		setter = function(newVal) {
+			if (setCheck(newVal, currVal)) {
+				memberContainer[index] = newVal;
+			}
+			else {
+				throw(new Error("Invalid value for " + index));
+			}
+		};
+	}
+
+	Object.defineProperty(that, index, {
+		  get: getter
+		, set: setter
+	});
+};
 
 /* Parameters (Object)
  *	builder: String; Name of the area's builder.
@@ -27,46 +81,21 @@ typeCompare = function(variable0, variable1) {
  */
 areaConstructor = function (paramObject) {
 	var that, privateMembers, index;
-	var commonSetterFunction;
 
 	that = {};
 
 	privateMembers = {
-		  "builder": ""
-		, "areaName": ""
-		, "filename": ""
-		, "vNumRange": []
-		, "levelRange": []
-		};
+					   "builder": "builder"
+					 , "areaName": "area name"
+					 , "filename": "filename"
+					 , "vNumRange": [0, 0]
+					 , "levelRange": [0, 0]
+					 };
 
-	setCheck = function(newVal, privateMembers, index) {
-		var validVar;
-
-		if (newVal !== undefined && typeCompare(newVal, privateMembers[index])) {
-			validVar = true;
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			getterSetter(that, privateMembers, index);
 		}
-		else {
-			validVar = false;
-		}
-	};
-
-	for (var index in privateMembers) {
-		(function(index) {
-			var currVal;
-
-			currVal = privateMembers[index];
-
-			Object.defineProperty(that, index, {
-				get: function() {
-					return(privateMembers[index]);
-				},
-				set: function(newVal) {
-					if (setCheck(newVal, privateMembers[index])) {
-						privateMembers[index] = newVal;
-					}
-				}
-			});
-		})(index);
 	}
 
 
@@ -75,6 +104,28 @@ areaConstructor = function (paramObject) {
 	that.filename = paramObject.filename;
 	that.vNumRange = paramObject.vNumRange;
 	that.levelRange = paramObject.levelRange;
+
+	return(that);
+};
+
+/* Parameters (Object)
+ *	vNum: Integer; Unique vnum for the room.
+ *	header: String; Short label of the room. Players with 'brief' mode on will
+ *		see only this.
+ *	description: String; Room description, 3-10ish lines (for style.)
+ *	flags: Array of Chars; Room flags. Each is a single char from
+ *		['A', 'C', 'D', 'J', 'K', 'L', 'M', 'N']
+ *	sectorType: Integer; Type of sector (for environmental effects.)
+ *	exits: Array of exit objects.
+ *	extras: Array of roomExtra objects.
+ *	manaAdjust: Integer 1-200; Percentage adjuster to mana recovery rate. 100
+ *		is normal.
+ *	healAdjust: Integer 1-200; Percentage adjuster to heal recovery rate. 100
+ *		is normal.
+ *	clans: Array of Strings; Clans which are allowed access.
+ */
+roomConstructor = function() {
+	var that;
 
 	return(that);
 };
@@ -101,75 +152,32 @@ areaConstructor = function (paramObject) {
  *		attacked.)
  */
 // Finish this parameter list.
-function Mob(paramObject) {
-	var paramList;
+mobConstructor = function() {
+	var that;
 
-	paramList = [
-				  "nameList"
-				, "shortDesc"
-				, "longDesc"
-				, "lookDesc"
-				, "race"
-				, "actionFlags"
-				, "affectFlags"
-				, "alignment"
-				, "mobGroup"
-				, "level"
-				, "hitBonus"
-				, "hitDice"
-				, "manaDice"
-				, "dmgDice"
-				, "dmgType"
-				];
+	return(that);
+};
 
-	this = listToObj(paramList, paramObject);
-}
+//objConstructor = function() {
+//};
 
-/* Parameters (Object)
- *	vNum: Integer; Unique vnum for the room.
- *	header: String; Short label of the room. Players with 'brief' mode on will
- *		see only this.
- *	description: String; Room description, 3-10ish lines (for style.)
- *	flags: Array of Chars; Room flags. Each is a single char from
- *		['A', 'C', 'D', 'J', 'K', 'L', 'M', 'N']
- *	sectorType: Integer; Type of sector (for environmental effects.)
- *	exits: Array of exit objects.
- *	extras: Array of roomExtra objects.
- *	manaAdjust: Integer 1-200; Percentage adjuster to mana recovery rate. 100
- *		is normal.
- *	healAdjust: Integer 1-200; Percentage adjuster to heal recovery rate. 100
- *		is normal.
- *	clans: Array of Strings; Clans which are allowed access.
- */
-function Room(paramObject) {
-	var paramList;
+resetConstructor = function() {
+	var that;
 
-	paramList = [
-				  "vNum"
-				, "header"
-				, "description"
-				, "flags"
-				, "sectorType"
-				, "exits"
-				, "extras"
-				, "manaAdjust"
-				, "healAdjust"
-				, "clans"
-				];
+	return that;
+};
 
-	this = listToObj(paramList, paramObject);
-}
+shopConstructor = function() {
+	var that;
 
-//function Object() {
-//}
+	return that;
+};
 
-function Reset() {
-}
+specialConstructor = function() {
+	var that;
 
-function Shop() {
-}
-
-function Special() {
-}
+	return that;
+};
 
 exports.areaConstructor = areaConstructor;
+exports.typeCompare = typeCompare;
