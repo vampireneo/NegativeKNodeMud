@@ -40,9 +40,22 @@ setCheck = function(newVal, oldVal) {
 
 	validVar = (undefined !== newVal && typeCompare(newVal, oldVal));
 
-	return validVar;
+	return(validVar);
 };
 
+/* Parameters
+ *	that: Object to operate on.
+ *	memberContainer: Object which contains all valid members of that.
+ *	index: Key to appropriate member in memberContainer.
+ *	getter: Optional get function for member. If undefined, will simply return
+ *		the value of the member.
+ *	setter: Optional set function for member. If undefined, will simply set the
+ *		value of the member to the passed newVal, assuming it's defined and
+ *		matches type.
+ *
+ * Returns
+ *	None.
+ */
 getterSetter = function(that, memberContainer, index, getter, setter) {
 	var currVal;
 
@@ -54,7 +67,7 @@ getterSetter = function(that, memberContainer, index, getter, setter) {
 		};
 	}
 
-	if ( undefined === setter) {
+	if (undefined === setter) {
 		setter = function(newVal) {
 			if (setCheck(newVal, currVal)) {
 				memberContainer[index] = newVal;
@@ -66,8 +79,8 @@ getterSetter = function(that, memberContainer, index, getter, setter) {
 	}
 
 	Object.defineProperty(that, index, {
-		  get: getter
-		, set: setter
+		get: getter,
+		set: setter
 	});
 };
 
@@ -125,7 +138,31 @@ areaConstructor = function (paramObject) {
  *	clans: Array of Strings; Clans which are allowed access.
  */
 roomConstructor = function() {
-	var that;
+	var that, privateMembers, index;
+
+	that = {};
+
+	privateMembers = {
+					   "vNum": "0"
+					 , "header": "A room"
+					 , "description": "A room"
+					 , "flags": "K"
+					 , "sectorType": 0
+					 , "exits": [null]
+					 , "extras": [null]
+					 , "manaAdjust": 100
+					 , "healAdjust": 100
+					 , "clans": [null]
+					 };
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			getterSetter(that, privateMembers, index);
+		}
+	}
+
+
+	// Initialize all of that's parameters.
 
 	return(that);
 };
@@ -179,5 +216,6 @@ specialConstructor = function() {
 	return that;
 };
 
-exports.areaConstructor = areaConstructor;
 exports.typeCompare = typeCompare;
+exports.setCheck = setCheck;
+exports.areaConstructor = areaConstructor;
