@@ -32,7 +32,7 @@ testSetCheck = function(test) {
 	var idxOut, idxIn, innerTestParams, outerTestParams, innerVal, outerVal;
 
 	outerTestParams = [1, 'a', [0, 1, 2], {"a":"b", "1":"chicken"}];
-	innerTestParams = [2, 'z', [0, 2, 65, 'a'], {"1":"chicken"}]
+	innerTestParams = [2, 'z', [0, 2, 65, 'a'], {"1":"chicken"}];
 
 	for (idxOut = 0; idxOut < outerTestParams.length; idxOut++) {
 		outerVal = outerTestParams[idxOut];
@@ -52,6 +52,7 @@ testSetCheck = function(test) {
 	test.done();
 };
 
+// =T
 testGetterSetter = function(test) {
 	test.done();
 };
