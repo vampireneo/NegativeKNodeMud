@@ -3,7 +3,7 @@
 
 var area = require("../area.js");
 
-var testTypeCompare, testArea;
+var testTypeCompare, testSetCheck, testGetterSetter, testArea;
 
 testTypeCompare = function(test) {
 	var types, innerIndex, outerIndex, innerVar, outerVar;
@@ -25,6 +25,34 @@ testTypeCompare = function(test) {
 		}
 	}
 
+	test.done();
+};
+
+testSetCheck = function(test) {
+	var idxOut, idxIn, innerTestParams, outerTestParams, innerVal, outerVal;
+
+	outerTestParams = [1, 'a', [0, 1, 2], {"a":"b", "1":"chicken"}];
+	innerTestParams = [2, 'z', [0, 2, 65, 'a'], {"1":"chicken"}]
+
+	for (idxOut = 0; idxOut < outerTestParams.length; idxOut++) {
+		outerVal = outerTestParams[idxOut];
+
+		for (idxIn = 0; idxIn < innerTestParams.length; idxIn++) {
+			innerVal = innerTestParams[idxIn];
+
+			if (idxIn === idxOut) {
+				test.ok(area.setCheck(outerVal, innerVal));
+			}
+			else {
+				test.ok(! area.setCheck(outerVal, innerVal));
+			}
+		}
+	}
+
+	test.done();
+};
+
+testGetterSetter = function(test) {
 	test.done();
 };
 
@@ -91,5 +119,7 @@ testArea = function(test) {
 	test.done();
 };
 
+exports.testSetCheck = testSetCheck;
+exports.testGetterSetter = testGetterSetter;
 exports.testTypeCompare = testTypeCompare;
 exports.testArea = testArea;
