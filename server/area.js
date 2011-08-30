@@ -1,9 +1,9 @@
 /*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
 "use strict";
 
-var typeCompare, getterSetter, setCheck, areaConstructor, mobConstructor,
-	roomConstructor, objConstructor, resetConstructor, shopConstructor,
-	specialConstructor;
+var typeCompare, getterSetter, setCheck, rangeSetter, areaConstructor,
+	mobConstructor, roomConstructor, objConstructor, resetConstructor,
+	shopConstructor, specialConstructor;
 
 /* Parameters
  *	variable0, variable1: The two variables to compare types of.
@@ -44,6 +44,29 @@ setCheck = function(newVal, oldVal) {
 };
 
 /* Parameters
+ *	
+ *
+ * Returns
+ *
+ */
+rangeSetter = function(memberContainer, index, minVal, maxVal) {
+	var currVal, setterFunction;
+
+	currVal = memberContainer[index];
+
+	setterFunction = function(newVal) {
+		if (setCheck(newVal, currVal) && minVal <= newVal && newVal <= maxVal) {
+			memberContainer[index] = newVal;
+		}
+		else {
+			throw(new Error("Invalid value for " + index + ": " + newVal));
+		}
+	};
+
+	return(setterFunction);
+};
+
+/* Parameters
  *	that: Object to operate on.
  *	memberContainer: Object which contains all valid members of that.
  *	index: Key to appropriate member in memberContainer.
@@ -73,7 +96,7 @@ getterSetter = function(that, memberContainer, index, getter, setter) {
 				memberContainer[index] = newVal;
 			}
 			else {
-				throw(new Error("Invalid value for " + index));
+				throw(new Error("Invalid value for " + index + ": " + newVal));
 			}
 		};
 	}
@@ -108,15 +131,10 @@ areaConstructor = function (paramObject) {
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
 			getterSetter(that, privateMembers, index);
+
+			that[index] = paramObject[index];
 		}
 	}
-
-
-	that.builder = paramObject.builder;
-	that.areaName = paramObject.areaName;
-	that.filename = paramObject.filename;
-	that.vNumRange = paramObject.vNumRange;
-	that.levelRange = paramObject.levelRange;
 
 	return(that);
 };
@@ -136,17 +154,21 @@ areaConstructor = function (paramObject) {
  *	healAdjust: Integer 1-200; Percentage adjuster to heal recovery rate. 100
  *		is normal.
  *	clans: Array of Strings; Clans which are allowed access.
+ *
+ * TODO:
+ *	Add array of rooms to areaConstructor once roomConstructor is complete.
+ *	Add range checks for setters like manaAdjust.
  */
-roomConstructor = function() {
-	var that, privateMembers, index;
+roomConstructor = function(paramObject) {
+	var that, privateMembers, index, otherGetters, otherSetters, defaultGetSet;
 
 	that = {};
 
 	privateMembers = {
-					   "vNum": "0"
+					   "vNum": 0
 					 , "header": "A room"
 					 , "description": "A room"
-					 , "flags": "K"
+					 , "flags": [null]
 					 , "sectorType": 0
 					 , "exits": [null]
 					 , "extras": [null]
@@ -155,14 +177,31 @@ roomConstructor = function() {
 					 , "clans": [null]
 					 };
 
+	otherGetters = [];
+	otherSetters = ["manaAdjust", "healAdjust"];
+
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
-			getterSetter(that, privateMembers, index);
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
 		}
 	}
 
+	getterSetter(that, privateMembers, "manaAdjust", undefined,
+			rangeSetter(privateMembers, "manaAdjust", 0, 200));
 
-	// Initialize all of that's parameters.
+	that.manaAdjust = paramObject.manaAdjust;
+
+	getterSetter(that, privateMembers, "healAdjust", undefined,
+			rangeSetter(privateMembers, "healAdjust", 0, 200));
+
+	that.healAdjust = paramObject.healAdjust;
 
 	return(that);
 };
@@ -219,3 +258,4 @@ specialConstructor = function() {
 exports.typeCompare = typeCompare;
 exports.setCheck = setCheck;
 exports.areaConstructor = areaConstructor;
+exports.roomConstructor = roomConstructor;
