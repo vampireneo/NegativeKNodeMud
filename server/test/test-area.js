@@ -3,7 +3,8 @@
 
 var area = require("../area.js");
 
-var testTypeCompare, testSetCheck, testGetterSetter, testArea, testRoom;
+var testTypeCompare, testSetCheck, testGetterSetter, testArea, testRoom,
+	testRangeSetter;
 
 testTypeCompare = function(test) {
 	var types, innerIndex, outerIndex, innerVar, outerVar;
@@ -54,6 +55,15 @@ testSetCheck = function(test) {
 
 // =T
 testGetterSetter = function(test) {
+	test.ok();
+
+	test.done();
+};
+
+// =T
+testRangeSetter = function(test) {
+	test.ok();
+
 	test.done();
 };
 
@@ -215,6 +225,7 @@ testRoom = function(test) {
 };
 
 exports.testSetCheck = testSetCheck;
+exports.testRangeSetter = testRangeSetter;
 exports.testGetterSetter = testGetterSetter;
 exports.testTypeCompare = testTypeCompare;
 exports.testArea = testArea;
