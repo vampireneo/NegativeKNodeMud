@@ -3,7 +3,7 @@
 
 var area = require("../area.js");
 
-var testTypeCompare, testSetCheck, testGetterSetter, testArea;
+var testTypeCompare, testSetCheck, testGetterSetter, testArea, testRoom;
 
 testTypeCompare = function(test) {
 	var types, innerIndex, outerIndex, innerVar, outerVar;
@@ -120,7 +120,102 @@ testArea = function(test) {
 	test.done();
 };
 
+testRoom = function(test) {
+	var aRoom;
+
+	aRoom = area.roomConstructor({
+		  "vNum": 25
+		, "header": "Just a room"
+		, "description": "A simple room. Family portraits line the walls, basic but functional furniture lies around, and a monster in the corner is staring at you."
+		, "flags": ["A", "C", "D"]
+		, "sectorType": 5
+		, "exits": [null]
+		, "extras": [null]
+		, "manaAdjust": 85
+		, "healAdjust": 20
+		, "clans": [null]
+	});
+
+	test.strictEqual(aRoom.vNum, 25);
+	test.strictEqual(aRoom.header, "Just a room");
+	test.strictEqual(aRoom.description, "A simple room. Family portraits " +
+		"line the walls, basic but functional furniture lies around, and a " +
+		"monster in the corner is staring at you.");
+	test.deepEqual(aRoom.flags, ["A", "C", "D"]);
+	test.strictEqual(aRoom.sectorType, 5);
+	test.deepEqual(aRoom.exits, [null]);
+	test.deepEqual(aRoom.extras, [null]);
+	test.strictEqual(aRoom.manaAdjust, 85);
+	test.strictEqual(aRoom.healAdjust, 20);
+	test.deepEqual(aRoom.clans, [null]);
+
+	test.throws(function() {
+		aRoom.vNum = undefined;
+	});
+	test.throws(function() {
+		aRoom.header = undefined;
+	});
+	test.throws(function() {
+		aRoom.description = undefined;
+	});
+	test.throws(function() {
+		aRoom.flags = undefined;
+	});
+	test.throws(function() {
+		aRoom.sectorType = undefined;
+	});
+	test.throws(function() {
+		aRoom.exits = undefined;
+	});
+	test.throws(function() {
+		aRoom.extras = undefined;
+	});
+	test.throws(function() {
+		aRoom.manaAdjust = undefined;
+	});
+	test.throws(function() {
+		aRoom.healAdjust = undefined;
+	});
+	test.throws(function() {
+		aRoom.clans = undefined;
+	});
+
+	test.throws(function() {
+		aRoom.vNum = "a";
+	});
+	test.throws(function() {
+		aRoom.header = {};
+	});
+	test.throws(function() {
+		aRoom.description = ["la"];
+	});
+	test.throws(function() {
+		aRoom.flags = "F";
+	});
+	test.throws(function() {
+		aRoom.sectorType = [5, 1];
+	});
+	test.throws(function() {
+		aRoom.exits = {"la":[10]};
+	});
+	test.throws(function() {
+		aRoom.extras = 0;
+	});
+	test.throws(function() {
+		aRoom.manaAdjust = -10;
+	});
+	test.throws(function() {
+		aRoom.healAdjust = 320;
+	});
+	test.throws(function() {
+		aRoom.clans = "a";
+	});
+
+	test.done();
+};
+
 exports.testSetCheck = testSetCheck;
 exports.testGetterSetter = testGetterSetter;
 exports.testTypeCompare = testTypeCompare;
 exports.testArea = testArea;
+exports.testRoom = testRoom;
