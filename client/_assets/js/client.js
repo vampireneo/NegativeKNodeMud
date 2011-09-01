@@ -1,4 +1,4 @@
-(function($) {
+;(function($) {
 	$(document).ready(function(){
 		var serverSocket = new WebSocket("ws:localhost:4000");
 
@@ -11,7 +11,7 @@
 				if (line != '') {
 					serverSocket.send(line);
 				}
-				return "command printed";
+				return true;
 			},
 			autofocus: true,
 			animateScroll: true,
@@ -19,22 +19,18 @@
 		});
 
 		serverSocket.onopen = function(event) {
-			controller.notice('Connection opened.');
-			controller.scrollToBottom();
+			controller.commandResult('Connection opened.');
 		};
 
 		serverSocket.onmessage = function(event) {
-			controller.notice(event.data);
-			controller.scrollToBottom();
+			controller.commandResult(event.data);
 		};
 
 		serverSocket.onclose = function(event) {
-			controller.notice("Connection closed: " + event.data);
-			controller.scrollToBottom();
+			controller.commandResult("Connection closed: " + event.data);
 		};
 
 		$('body').append(jQueryConsole);
-		console.log(controller);
 	});
 })(jQuery);
 
