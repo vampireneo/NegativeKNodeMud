@@ -257,5 +257,6 @@ specialConstructor = function() {
 
 exports.typeCompare = typeCompare;
 exports.setCheck = setCheck;
+exports.rangeSetter = rangeSetter;
 exports.areaConstructor = areaConstructor;
 exports.roomConstructor = roomConstructor;
