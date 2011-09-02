@@ -1,4 +1,4 @@
-/*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
+/*jslint node: true, white: false, plusplus: true, maxerr: 50, indent: 4 */
 "use strict";
 
 var typeCompare, getterSetter, setCheck, rangeSetter, areaConstructor,
@@ -115,18 +115,18 @@ getterSetter = function(that, memberContainer, index, getter, setter) {
  *	levelRange: Array of Integers; Suggested minimum and maximum levels for
  *		the area. Example: [3, 15].
  */
-areaConstructor = function (paramObject) {
+areaConstructor = function(paramObject) {
 	var that, privateMembers, index;
 
 	that = {};
 
 	privateMembers = {
-					   "builder": "builder"
-					 , "areaName": "area name"
-					 , "filename": "filename"
-					 , "vNumRange": [0, 0]
-					 , "levelRange": [0, 0]
-					 };
+			  "builder": "builder"
+			, "areaName": "area name"
+			, "filename": "filename"
+			, "vNumRange": [0, 0]
+			, "levelRange": [0, 0]
+	};
 
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
@@ -165,17 +165,17 @@ roomConstructor = function(paramObject) {
 	that = {};
 
 	privateMembers = {
-					   "vNum": 0
-					 , "header": "A room"
-					 , "description": "A room"
-					 , "flags": [null]
-					 , "sectorType": 0
-					 , "exits": [null]
-					 , "extras": [null]
-					 , "manaAdjust": 100
-					 , "healAdjust": 100
-					 , "clans": [null]
-					 };
+			  "vNum": 0
+			, "header": "A room"
+			, "description": "A room"
+			, "flags": [null]
+			, "sectorType": 0
+			, "exits": [null]
+			, "extras": [null]
+			, "manaAdjust": 100
+			, "healAdjust": 100
+			, "clans": [null]
+	};
 
 	otherGetters = [];
 	otherSetters = ["manaAdjust", "healAdjust"];
