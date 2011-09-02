@@ -53,16 +53,60 @@ testSetCheck = function(test) {
 	test.done();
 };
 
-// =T
 testGetterSetter = function(test) {
-	test.ok();
+	var fakeContainer;
+
+	fakeContainer = {
+		"key":3
+	};
+
+	fakeContainer.key = 0;
+	test.strictEqual(fakeContainer.key, 0);
+
+	test.throws(fakeContainer.key = [0, "cat", "foo"]);
+
+	fakeContainer = {
+		"key":[0]
+	};
+	fakeContainer.key = [0, "cat", "foo"];
+	test.deepEqual(fakeContainer.key, [0, "cat", "foo"]);
+
+	test.throws(fakeContainer.key = 0);
+	test.throws(fakeContainer.key = {"key":"value"});
+
+	fakeContainer = {
+		"key":{
+			"key":"bar"
+		}
+	};
+	fakeContainer.key = {"key":"value"};
+	test.deepEqual(fakeContainer.key, {"key":"value"});
 
 	test.done();
 };
 
-// =T
 testRangeSetter = function(test) {
-	test.ok();
+	var fakeContainer, rangeFunction;
+
+	fakeContainer = {
+			  "key": 4
+	};
+	
+	rangeFunction = area.rangeSetter(fakeContainer, "key", 0, 5);
+
+	rangeFunction(2);
+	test.strictEqual(fakeContainer.key, 2);
+
+	rangeFunction(5);
+	test.strictEqual(fakeContainer.key, 5);
+
+	test.throws(function() {
+		rangeFunction(-1);
+	});
+
+	test.throws(function() {
+		rangeFunction(6);
+	});
 
 	test.done();
 };
