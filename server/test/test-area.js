@@ -3,8 +3,8 @@
 
 var area = require("../area.js");
 
-var testTypeCompare, testSetCheck, testGetterSetter, testArea, testRoom,
-	testRangeSetter;
+var testTypeCompare, testSetCheck, testGetterSetter, testRangeSetter,
+	testElOfSetter, testArea, testRoom, testExit; 
 
 testTypeCompare = function(test) {
 	var types, innerIndex, outerIndex, innerVar, outerVar;
@@ -89,16 +89,17 @@ testRangeSetter = function(test) {
 	var fakeContainer, rangeFunction;
 
 	fakeContainer = {
-			  "key": 4
+			  "key0": 4
+			, "key1": "a"
 	};
 	
-	rangeFunction = area.rangeSetter(fakeContainer, "key", 0, 5);
+	rangeFunction = area.rangeSetter(fakeContainer, "key0", 0, 5);
 
 	rangeFunction(2);
-	test.strictEqual(fakeContainer.key, 2);
+	test.strictEqual(fakeContainer.key0, 2);
 
 	rangeFunction(5);
-	test.strictEqual(fakeContainer.key, 5);
+	test.strictEqual(fakeContainer.key0, 5);
 
 	test.throws(function() {
 		rangeFunction(-1);
@@ -106,6 +107,57 @@ testRangeSetter = function(test) {
 
 	test.throws(function() {
 		rangeFunction(6);
+	});
+
+	test.done();
+};
+
+testElOfSetter = function(test) {
+	var fakeContainer, elFunction, validVals;
+
+	fakeContainer = {
+			  "key0": "alpha"
+			, "key1": "beta"
+	};
+
+	test.throws(function() {
+		area.elOfSetter(fakeContainer, "key0", [undefined, "bar"]);
+	});
+
+	test.throws(function() {
+		area.elOfSetter(fakeContainer, "key0", ["foo", [1, 2]]);
+	});
+
+	test.throws(function() {
+		area.elOfSetter(fakeContainer, "key0", ["baz", {"key": "value"}]);
+	});
+
+	validVals = ["alpha", "beta", 4, -1];
+	elFunction = area.elOfSetter(fakeContainer, "key0", validVals);
+
+	elFunction("beta");
+	test.strictEqual(fakeContainer.key0, "beta");
+
+	elFunction(4);
+	test.strictEqual(fakeContainer.key0, 4);
+
+	elFunction(-1);
+	test.strictEqual(fakeContainer.key0, -1);
+
+	test.throws(function() {
+		elFunction(5);
+	});
+
+	test.throws(function() {
+		elFunction("foobar");
+	});
+
+	test.throws(function() {
+		elFunction(["foo", 0]);
+	});
+
+	test.throws(function() {
+		elFunction({"foo": "bar"});
 	});
 
 	test.done();
@@ -268,9 +320,20 @@ testRoom = function(test) {
 	test.done();
 };
 
+// =T
+testExit = function(test) {
+	var anExit;
+
+	anExit = exitConstructor({
+	});
+
+	test.done();
+};
+
 exports.testSetCheck = testSetCheck;
 exports.testRangeSetter = testRangeSetter;
 exports.testGetterSetter = testGetterSetter;
+exports.testElOfSetter = testElOfSetter;
 exports.testTypeCompare = testTypeCompare;
 exports.testArea = testArea;
 exports.testRoom = testRoom;
