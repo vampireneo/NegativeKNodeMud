@@ -1,7 +1,7 @@
 /*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
 "use strict";
 
-var typeCompare, getterSetter, setCheck, rangeSetter, elOfSetter,
+var typeCompare, getterSetter, setCheck, rangeSetter, elOfSetter, subsetSetter,
 	areaConstructor, roomConstructor, exitConstructor,
 	// Unwritten
 	mobConstructor, objConstructor, resetConstructor,
@@ -79,9 +79,12 @@ rangeSetter = function(memberContainer, key, minVal, maxVal) {
  *	memberContainer: Object which contains key.
  *	key: Key of value which is to be set.
  *	validVals: Array of valid values to take.
+ *
+ * TODO
+ *	Consider moving away from indexOf to allow for Arrays and Objects.
  */
 elOfSetter = function(memberContainer, key, validVals) {
-	var currVal, setterFunction, index;
+	var setterFunction, index;
 
 	for (index = 0; index < validVals.length; index++) {
 		if (undefined === validVals[index]) {
@@ -95,8 +98,6 @@ elOfSetter = function(memberContainer, key, validVals) {
 		}
 	}
 
-	currVal = memberContainer[key];
-
 	setterFunction = function(newVal) {
 		// No use for setCheck since we might have lots of types.
 		if (undefined !== newVal && -1 !== validVals.indexOf(newVal)) {
@@ -104,6 +105,61 @@ elOfSetter = function(memberContainer, key, validVals) {
 		}
 		else {
 			throw(new Error("Invalid value for " + key + ": " + newVal));
+		}
+	};
+
+	return(setterFunction);
+};
+
+/* Creates a setter function for which the passed array must be a subset of a
+ *		given list.
+ * NOTE: Does not handle Arrays of Objects in the given list.
+ * Parameters
+ *	memberContainer: Object which contains key.
+ *	key: Key of value which is to be set.
+ *	validVals: Array of valid values to take.
+ *
+ * TODO
+ *	Consider moving away from indexOf to allow for Arrays and Objects.
+ */
+subsetSetter = function(memberContainer, key, validVals) {
+	var setterFunction, index;
+
+	for (index = 0; index < validVals.length; index++) {
+		if (undefined === validVals[index]) {
+			throw(new Error("subsetSetter can not handle undefined."));
+		}
+		else if (Array.isArray(validVals[index])) {
+			throw(new Error("subsetSetter can not handle Arrays."));
+		}
+		else if("object" === typeof(validVals[index])) {
+			throw(new Error("subsetSetter can not handle Objects."));
+		}
+	}
+
+	setterFunction = function(newVals) {
+		var elToCheck, validSubset;
+
+		validSubset = true;
+		
+		// No use for setCheck since we might have lots of types.
+		for (index = 0; index < newVals.length; index++) {
+			elToCheck = newVals[index];
+
+			if (validSubset) {
+				if (undefined === elToCheck || 
+						-1 === validVals.indexOf(elToCheck)) {
+					validSubset = false;
+				}
+			}
+		}
+
+		if (validSubset) {
+			memberContainer[key] = newVals;
+		}
+		else {
+			throw(new Error("New value '" + newVals + "' is not a subset " +
+					"of " + validVals));
 		}
 	};
 
@@ -158,6 +214,9 @@ getterSetter = function(that, memberContainer, key, getter, setter) {
  *	vNumRange: Array of Integers: Range of area's vnums. Example: [6, 20].
  *	levelRange: Array of Integers; Suggested minimum and maximum levels for
  *		the area. Example: [3, 15].
+ *
+ * TODO
+ *	Perform better checks on vNumRange and levelRange.
  */
 areaConstructor = function(paramObject) {
 	var that, privateMembers, index;
@@ -225,7 +284,7 @@ roomConstructor = function(paramObject) {
 	};
 
 	otherGetters = [];
-	otherSetters = ["manaAdjust", "healAdjust", "flags"];
+	otherSetters = ["manaAdjust", "healAdjust", "flags", "sectorType"];
 
 	validFlags = [
 			  "dark"
@@ -279,9 +338,9 @@ roomConstructor = function(paramObject) {
 	that.flags = paramObject.flags;
 
 	getterSetter(that, privateMembers, "sectorType", undefined,
-			elOfSetter(privateMembers, "flags", validSectors));
+			elOfSetter(privateMembers, "sectorType", validSectors));
 
-	that.flags = paramObject.flags;
+	that.sectorType = paramObject.sectorType;
 
 	return(that);
 };
@@ -303,7 +362,7 @@ roomConstructor = function(paramObject) {
  *		* doorState - elOfSetter
  */
 exitConstructor = function(paramObject) {
-	var that, privateMembers;
+	var that, privateMembers, otherGetters, otherSetters, index, defaultGetSet;
 
 	that = {};
 
@@ -360,19 +419,8 @@ exitConstructor = function(paramObject) {
  * TODO
  *	Finish this parameter list.
  */
-mobConstructor = function() {
-	var that;
-
-	return(that);
-};
-
-/* Parameters (Object)
- *
- * TODO
- *	Actually write this.
- */
-objConstructor = function() {
-	var that, privateMembers;
+mobConstructor = function(paramObject) {
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
 
 	that = {};
 
@@ -403,8 +451,41 @@ objConstructor = function() {
  * TODO
  *	Actually write this.
  */
-resetConstructor = function() {
-	var that, privateMembers;
+objConstructor = function(paramObject) {
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
+
+	that = {};
+
+	privateMembers = {
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
+};
+
+
+/* Parameters (Object)
+ *
+ * TODO
+ *	Actually write this.
+ */
+resetConstructor = function(paramObject) {
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
 
 	that = {};
 
@@ -435,8 +516,8 @@ resetConstructor = function() {
  * TODO
  *	Actually write this.
  */
-shopConstructor = function() {
-	var that, privateMembers;
+shopConstructor = function(paramObject) {
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
 
 	that = {};
 
@@ -467,8 +548,8 @@ shopConstructor = function() {
  * TODO
  *	Actually write this.
  */
-specialConstructor = function() {
-	var that, privateMembers;
+specialConstructor = function(paramObject) {
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
 
 	that = {};
 
@@ -498,5 +579,7 @@ exports.typeCompare = typeCompare;
 exports.setCheck = setCheck;
 exports.rangeSetter = rangeSetter;
 exports.elOfSetter = elOfSetter;
+exports.subsetSetter = subsetSetter;
 exports.areaConstructor = areaConstructor;
 exports.roomConstructor = roomConstructor;
+exports.exitConstructor = exitConstructor;
