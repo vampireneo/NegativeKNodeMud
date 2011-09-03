@@ -1,4 +1,4 @@
-/*jslint node: true, white: false, plusplus: true, maxerr: 50, indent: 4 */
+/*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
 "use strict";
 
 var typeCompare, getterSetter, setCheck, rangeSetter, areaConstructor,
