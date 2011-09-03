@@ -4,7 +4,7 @@
 var area = require("../area.js");
 
 var testTypeCompare, testSetCheck, testGetterSetter, testRangeSetter,
-	testElOfSetter, testArea, testRoom, testExit; 
+	testElOfSetter, testSubsetSetter, testArea, testRoom, testExit; 
 
 testTypeCompare = function(test) {
 	var types, innerIndex, outerIndex, innerVar, outerVar;
@@ -163,6 +163,64 @@ testElOfSetter = function(test) {
 	test.done();
 };
 
+testSubsetSetter = function(test) {
+	var fakeContainer, subsetFunction, validVals;
+
+	fakeContainer = {
+			  "key0": ["alpha", -5, "beta"]
+			, "key1": ["alpha", 1, "beta"]
+	};
+
+	test.throws(function() {
+		area.subsetSetter(fakeContainer, "key0", [undefined, "bar"]);
+	});
+
+	test.throws(function() {
+		area.subsetSetter(fakeContainer, "key0", ["foo", [1, 2]]);
+	});
+
+	test.throws(function() {
+		area.subsetSetter(fakeContainer, "key0", ["baz", {"key": "value"}]);
+	});
+
+	validVals = ["alpha", "beta", "gamma", -5, 0, 5];
+	subsetFunction = area.subsetSetter(fakeContainer, "key0", validVals);
+
+	subsetFunction(["alpha"]);
+	test.deepEqual(fakeContainer.key0, ["alpha"]);
+
+	subsetFunction(["alpha", "gamma", -5, 0]);
+	test.deepEqual(fakeContainer.key0, ["alpha", "gamma", -5, 0]);
+
+	subsetFunction([]);
+	test.deepEqual(fakeContainer.key0, []);
+
+	subsetFunction(["alpha", "beta", "gamma", -5, 0, 5]);
+	test.deepEqual(fakeContainer.key0, ["alpha", "beta", "gamma", -5, 0, 5]);
+
+	test.throws(function() {
+		subsetFunction(["alpha", "beta", "gamma", -5, 0, 5, 8]);
+	});
+
+	test.throws(function() {
+		subsetFunction(["foobar"]);
+	});
+
+	test.throws(function() {
+		subsetFunction([-1]);
+	});
+
+	test.throws(function() {
+		subsetFunction([[-1]]);
+	});
+
+	test.throws(function() {
+		subsetFunction([{"key": "value"}]);
+	});
+
+	test.done();
+};
+
 testArea = function(test) {
 	var anArea;
 
@@ -233,8 +291,8 @@ testRoom = function(test) {
 		  "vNum": 25
 		, "header": "Just a room"
 		, "description": "A simple room. Family portraits line the walls, basic but functional furniture lies around, and a monster in the corner is staring at you."
-		, "flags": ["A", "C", "D"]
-		, "sectorType": 5
+		, "flags": ["dark", "no mob", "private"]
+		, "sectorType": "hills"
 		, "exits": [null]
 		, "extras": [null]
 		, "manaAdjust": 85
@@ -247,8 +305,8 @@ testRoom = function(test) {
 	test.strictEqual(aRoom.description, "A simple room. Family portraits " +
 		"line the walls, basic but functional furniture lies around, and a " +
 		"monster in the corner is staring at you.");
-	test.deepEqual(aRoom.flags, ["A", "C", "D"]);
-	test.strictEqual(aRoom.sectorType, 5);
+	test.deepEqual(aRoom.flags, ["dark", "no mob", "private"]);
+	test.strictEqual(aRoom.sectorType, "hills");
 	test.deepEqual(aRoom.exits, [null]);
 	test.deepEqual(aRoom.extras, [null]);
 	test.strictEqual(aRoom.manaAdjust, 85);
@@ -296,7 +354,7 @@ testRoom = function(test) {
 		aRoom.description = ["la"];
 	});
 	test.throws(function() {
-		aRoom.flags = "F";
+		aRoom.flags = "foobar";
 	});
 	test.throws(function() {
 		aRoom.sectorType = [5, 1];
@@ -322,10 +380,12 @@ testRoom = function(test) {
 
 // =T
 testExit = function(test) {
+/*
 	var anExit;
 
-	anExit = exitConstructor({
+	anExit = area.exitConstructor({
 	});
+*/
 
 	test.done();
 };
@@ -335,5 +395,8 @@ exports.testRangeSetter = testRangeSetter;
 exports.testGetterSetter = testGetterSetter;
 exports.testElOfSetter = testElOfSetter;
 exports.testTypeCompare = testTypeCompare;
+exports.testSubsetSetter = testSubsetSetter;
+
 exports.testArea = testArea;
 exports.testRoom = testRoom;
+exports.testExit = testExit;
