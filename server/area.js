@@ -43,11 +43,15 @@ setCheck = function(newVal, oldVal) {
 	return(validVar);
 };
 
-/* Parameters
- *	
+/* Creates a setter function for which a value must fit in a range.
+ * Parameters
+ *	memberContainer: Object which contains index key.
+ *	index: Key to value which is to be set.
+ *	minVal: Minimum allowed value.
+ *	maxVal: Maximum allowed value.
  *
  * Returns
- *
+ *	setterFunction: Setter function for index in memberContainer.
  */
 rangeSetter = function(memberContainer, index, minVal, maxVal) {
 	var currVal, setterFunction;
