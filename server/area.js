@@ -1,9 +1,10 @@
 /*jslint node: true, white: true, plusplus: true, maxerr: 50, indent: 4 */
 "use strict";
 
-var typeCompare, getterSetter, setCheck, rangeSetter, areaConstructor,
-	roomConstructor, exitConstructor,
-	mobConstructor, objConstructor, resetConstructor, //Unwritten
+var typeCompare, getterSetter, setCheck, rangeSetter, elOfSetter,
+	areaConstructor, roomConstructor, exitConstructor,
+	// Unwritten
+	mobConstructor, objConstructor, resetConstructor,
 	shopConstructor, specialConstructor;
 
 /* Parameters
@@ -46,25 +47,63 @@ setCheck = function(newVal, oldVal) {
 
 /* Creates a setter function for which a value must fit in a range.
  * Parameters
- *	memberContainer: Object which contains index key.
- *	index: Key to value which is to be set.
+ *	memberContainer: Object which contains key.
+ *	key: Key of value which is to be set.
  *	minVal: Minimum allowed value.
  *	maxVal: Maximum allowed value.
  *
  * Returns
- *	setterFunction: Setter function for index in memberContainer.
+ *	setterFunction: Setter function for key in memberContainer.
  */
-rangeSetter = function(memberContainer, index, minVal, maxVal) {
+rangeSetter = function(memberContainer, key, minVal, maxVal) {
 	var currVal, setterFunction;
 
-	currVal = memberContainer[index];
+	currVal = memberContainer[key];
 
 	setterFunction = function(newVal) {
 		if (setCheck(newVal, currVal) && minVal <= newVal && newVal <= maxVal) {
-			memberContainer[index] = newVal;
+			memberContainer[key] = newVal;
 		}
 		else {
-			throw(new Error("Invalid value for " + index + ": " + newVal));
+			throw(new Error("Invalid value for " + key + ": " + newVal));
+		}
+	};
+
+	return(setterFunction);
+};
+
+/* Creates a setter function for which a value must be contained in a given
+ *		list.
+ * NOTE: Does not handle Arrays of Objects.
+ * Parameters
+ *	memberContainer: Object which contains key.
+ *	key: Key of value which is to be set.
+ *	validVals: Array of valid values to take.
+ */
+elOfSetter = function(memberContainer, key, validVals) {
+	var currVal, setterFunction, index;
+
+	for (index = 0; index < validVals.length; index++) {
+		if (undefined === validVals[index]) {
+			throw(new Error("elOfSetter can not handle undefined."));
+		}
+		else if (Array.isArray(validVals[index])) {
+			throw(new Error("elOfSetter can not handle Arrays."));
+		}
+		else if("object" === typeof(validVals[index])) {
+			throw(new Error("elOfSetter can not handle Objects."));
+		}
+	}
+
+	currVal = memberContainer[key];
+
+	setterFunction = function(newVal) {
+		// No use for setCheck since we might have lots of types.
+		if (undefined !== newVal && -1 !== validVals.indexOf(newVal)) {
+			memberContainer[key] = newVal;
+		}
+		else {
+			throw(new Error("Invalid value for " + key + ": " + newVal));
 		}
 	};
 
@@ -74,7 +113,7 @@ rangeSetter = function(memberContainer, index, minVal, maxVal) {
 /* Parameters
  *	that: Object to operate on.
  *	memberContainer: Object which contains all valid members of that.
- *	index: Key to appropriate member in memberContainer.
+ *	key: Key to appropriate member in memberContainer.
  *	getter: Optional get function for member. If undefined, will simply return
  *		the value of the member.
  *	setter: Optional set function for member. If undefined, will simply set the
@@ -84,29 +123,29 @@ rangeSetter = function(memberContainer, index, minVal, maxVal) {
  * Returns
  *	None.
  */
-getterSetter = function(that, memberContainer, index, getter, setter) {
+getterSetter = function(that, memberContainer, key, getter, setter) {
 	var currVal;
 
-	currVal = memberContainer[index];
+	currVal = memberContainer[key];
 
 	if (undefined === getter) {
 		getter = function() {
-			return(memberContainer[index]);
+			return(memberContainer[key]);
 		};
 	}
 
 	if (undefined === setter) {
 		setter = function(newVal) {
 			if (setCheck(newVal, currVal)) {
-				memberContainer[index] = newVal;
+				memberContainer[key] = newVal;
 			}
 			else {
-				throw(new Error("Invalid value for " + index + ": " + newVal));
+				throw(new Error("Invalid value for " + key + ": " + newVal));
 			}
 		};
 	}
 
-	Object.defineProperty(that, index, {
+	Object.defineProperty(that, key, {
 		get: getter,
 		set: setter
 	});
@@ -163,11 +202,12 @@ areaConstructor = function(paramObject) {
  * TODO:
  *	Add array of rooms to areaConstructor once roomConstructor is complete.
  *	Add setter constraints on:
- *		* flags - elementOfSetter
- *		* sectorType - elementOfSetter
+ *		* flags - subsetSetter
+ *		* sectorType - subsetSetter
  */
 roomConstructor = function(paramObject) {
-	var that, privateMembers, index, otherGetters, otherSetters, defaultGetSet;
+	var that, privateMembers, index, otherGetters, otherSetters, defaultGetSet,
+	validFlags, validSectors;
 
 	that = {};
 
@@ -185,7 +225,30 @@ roomConstructor = function(paramObject) {
 	};
 
 	otherGetters = [];
-	otherSetters = ["manaAdjust", "healAdjust"];
+	otherSetters = ["manaAdjust", "healAdjust", "flags"];
+
+	validFlags = [
+			  "dark"
+			, "no mob"
+			, "indoors"
+			, "private"
+			, "safe"
+			, "solitary"
+			, "pet shop"
+			, "no recall"
+	];
+	validSectors = [
+			  "inside"
+			, "city"
+			, "field"
+			, "forest"
+			, "hills"
+			, "mountain"
+			, "water"
+			, "deep water"
+			, "air"
+			, "desert"
+	];
 
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
@@ -210,6 +273,16 @@ roomConstructor = function(paramObject) {
 
 	that.healAdjust = paramObject.healAdjust;
 
+	getterSetter(that, privateMembers, "flags", undefined,
+			subsetSetter(privateMembers, "flags", validFlags));
+
+	that.flags = paramObject.flags;
+
+	getterSetter(that, privateMembers, "sectorType", undefined,
+			elOfSetter(privateMembers, "flags", validSectors));
+
+	that.flags = paramObject.flags;
+
 	return(that);
 };
 
@@ -226,8 +299,8 @@ roomConstructor = function(paramObject) {
  *
  * TODO:
  *	Add setter constraints on:
- *		* direction - elementOfSetter
- *		* doorState - elementOfSetter
+ *		* direction - elOfSetter
+ *		* doorState - elOfSetter
  */
 exitConstructor = function(paramObject) {
 	var that, privateMembers;
@@ -424,5 +497,6 @@ specialConstructor = function() {
 exports.typeCompare = typeCompare;
 exports.setCheck = setCheck;
 exports.rangeSetter = rangeSetter;
+exports.elOfSetter = elOfSetter;
 exports.areaConstructor = areaConstructor;
 exports.roomConstructor = roomConstructor;
