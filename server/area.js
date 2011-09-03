@@ -2,7 +2,8 @@
 "use strict";
 
 var typeCompare, getterSetter, setCheck, rangeSetter, areaConstructor,
-	mobConstructor, roomConstructor, objConstructor, resetConstructor,
+	roomConstructor, exitConstructor,
+	mobConstructor, objConstructor, resetConstructor, //Unwritten
 	shopConstructor, specialConstructor;
 
 /* Parameters
@@ -161,7 +162,9 @@ areaConstructor = function(paramObject) {
  *
  * TODO:
  *	Add array of rooms to areaConstructor once roomConstructor is complete.
- *	Add range checks for setters like manaAdjust.
+ *	Add setter constraints on:
+ *		* flags - elementOfSetter
+ *		* sectorType - elementOfSetter
  */
 roomConstructor = function(paramObject) {
 	var that, privateMembers, index, otherGetters, otherSetters, defaultGetSet;
@@ -210,7 +213,57 @@ roomConstructor = function(paramObject) {
 	return(that);
 };
 
-/* Parameters
+/* Parameters (Object)
+ *	roomVnum: Integer; vnum of room the exit belongs to.
+ *	direction: String; Direction which exit is: north, south, east, west, up,
+ *			down.
+ *	description: String; What will be seen if the character looks in the
+ *			exit's direction.
+ *	keywords: Array of Strings; Other valid keywords for the exit.
+ *	doorState: String; "nodoor", "open", "closed", or "locked"
+ *	connectVnum: Integer; vnum of room the exit connects to.
+ *	keyVnum: Integer; vnum of key used to lock/unlock door.
+ *
+ * TODO:
+ *	Add setter constraints on:
+ *		* direction - elementOfSetter
+ *		* doorState - elementOfSetter
+ */
+exitConstructor = function(paramObject) {
+	var that, privateMembers;
+
+	that = {};
+
+	privateMembers = {
+			  "roomVnum": 0
+			, "direction": "north"
+			, "description": "An exit."
+			, "keywords": ["path", "trail"]
+			, "doorState": "nodoor"
+			, "connectVnum": 1
+			, "keyVnum": 0
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
+};
+
+/* Parameters (Object)
  *	vNum: Integer; Area virtual number of mob.
  *	nameList: Array of strings; List of valid names that reference mob.
  *	shortDesc: String; Fight/action description of mob.
@@ -230,33 +283,142 @@ roomConstructor = function(paramObject) {
  *	dmgDice: Dice object for damage.
  *	dmgType: String; Type of damage (description and mechanical type dealt to 
  *		attacked.)
+ *
+ * TODO
+ *	Finish this parameter list.
  */
-// Finish this parameter list.
 mobConstructor = function() {
 	var that;
 
 	return(that);
 };
 
-//objConstructor = function() {
-//};
+/* Parameters (Object)
+ *
+ * TODO
+ *	Actually write this.
+ */
+objConstructor = function() {
+	var that, privateMembers;
 
+	that = {};
+
+	privateMembers = {
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
+};
+
+/* Parameters (Object)
+ *
+ * TODO
+ *	Actually write this.
+ */
 resetConstructor = function() {
-	var that;
+	var that, privateMembers;
 
-	return that;
+	that = {};
+
+	privateMembers = {
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
 };
 
+/* Parameters (Object)
+ *
+ * TODO
+ *	Actually write this.
+ */
 shopConstructor = function() {
-	var that;
+	var that, privateMembers;
 
-	return that;
+	that = {};
+
+	privateMembers = {
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
 };
 
+/* Parameters (Object)
+ *
+ * TODO
+ *	Actually write this.
+ */
 specialConstructor = function() {
-	var that;
+	var that, privateMembers;
 
-	return that;
+	that = {};
+
+	privateMembers = {
+	};
+
+	otherGetters = [];
+	otherSetters = [];
+
+	for (index in privateMembers) {
+		if (privateMembers.hasOwnProperty(index)) {
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
+
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
+		}
+	}
+
+	return(that);
 };
 
 exports.typeCompare = typeCompare;
