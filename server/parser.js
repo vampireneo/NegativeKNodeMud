@@ -11,8 +11,8 @@ function Machine(connection) {
 }
 
 Machine.prototype.welcome = function() {
-	this.connection.send("Welcome to nodeMud. Beware of falling rocks.");
-	this.connection.send("Login: ");
+	this.connection.send('{"type":"message", "message":"Welcome to nodeMud. Beware of falling rocks."}');
+	this.connection.send('{"type":"login"}');
 };
 
 Machine.prototype.parseInput = function(msg) {
