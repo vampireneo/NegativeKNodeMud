@@ -352,17 +352,13 @@ roomConstructor = function(paramObject) {
  *	description: String; What will be seen if the character looks in the
  *			exit's direction.
  *	keywords: Array of Strings; Other valid keywords for the exit.
- *	doorState: String; "nodoor", "open", "closed", or "locked"
+ *	doorState: String; "nodoor", "open", "closed", or "locked".
  *	connectVnum: Integer; vnum of room the exit connects to.
  *	keyVnum: Integer; vnum of key used to lock/unlock door.
- *
- * TODO:
- *	Add setter constraints on:
- *		* direction - elOfSetter
- *		* doorState - elOfSetter
  */
 exitConstructor = function(paramObject) {
-	var that, privateMembers, otherGetters, otherSetters, index, defaultGetSet;
+	var that, privateMembers, validDirs, validDoors, otherGetters, otherSetters,
+	defaultGetSet, index;
 
 	that = {};
 
@@ -377,7 +373,22 @@ exitConstructor = function(paramObject) {
 	};
 
 	otherGetters = [];
-	otherSetters = [];
+	otherSetters = ["direction", "doorState"];
+
+	validDirs = [
+			  "north"
+			, "east"
+			, "south"
+			, "west"
+			, "up"
+			, "down"
+	];
+	validDoors = [
+			  "nodoor"
+			, "open"
+			, "closed"
+			, "locked"
+	];
 
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
@@ -391,6 +402,16 @@ exitConstructor = function(paramObject) {
 			}
 		}
 	}
+
+	getterSetter(that, privateMembers, "direction", undefined,
+			elOfSetter(privateMembers, "direction", validDirs));
+
+	that.direction = paramObject.direction;
+
+	getterSetter(that, privateMembers, "doorState", undefined,
+			elOfSetter(privateMembers, "doorState", validDoors));
+
+	that.doorState = paramObject.doorState;
 
 	return(that);
 };
@@ -477,7 +498,6 @@ objConstructor = function(paramObject) {
 
 	return(that);
 };
-
 
 /* Parameters (Object)
  *
