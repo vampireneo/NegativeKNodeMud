@@ -284,6 +284,10 @@ testArea = function(test) {
 	test.done();
 };
 
+/* TODO
+ *	Use real exits.
+ *	Use real extras.
+ */
 testRoom = function(test) {
 	var aRoom;
 
@@ -312,6 +316,46 @@ testRoom = function(test) {
 	test.strictEqual(aRoom.manaAdjust, 85);
 	test.strictEqual(aRoom.healAdjust, 20);
 	test.deepEqual(aRoom.clans, [null]);
+
+	aRoom.vNum = 562;
+	aRoom.header = "A normal room.";
+	aRoom.description = "No, really. A normal room.";
+	aRoom.flags = [
+			  "dark"
+			, "no mob"
+			, "indoors"
+			, "private"
+			, "safe"
+			, "solitary"
+			, "pet shop"
+			, "no recall"
+	];
+	aRoom.sectorType = "desert";
+	aRoom.exits = [null];
+	aRoom.extras = [null];
+	aRoom.manaAdjust = 5;
+	aRoom.healAdjust = 195;
+	aRoom.clans = ["stone crows"];
+
+	test.strictEqual(aRoom.vNum, 562);
+	test.strictEqual(aRoom.header, "A normal room.");
+	test.strictEqual(aRoom.description, "No, really. A normal room.");
+	test.deepEqual(aRoom.flags, [
+			  "dark"
+			, "no mob"
+			, "indoors"
+			, "private"
+			, "safe"
+			, "solitary"
+			, "pet shop"
+			, "no recall"
+	]);
+	test.strictEqual(aRoom.sectorType, "desert");
+	test.deepEqual(aRoom.exits, [null]);
+	test.deepEqual(aRoom.extras, [null]);
+	test.strictEqual(aRoom.manaAdjust, 5);
+	test.strictEqual(aRoom.healAdjust, 195);
+	test.deepEqual(aRoom.clans, ["stone crows"]);
 
 	test.throws(function() {
 		aRoom.vNum = undefined;
@@ -378,14 +422,92 @@ testRoom = function(test) {
 	test.done();
 };
 
-// =T
 testExit = function(test) {
-/*
 	var anExit;
 
 	anExit = area.exitConstructor({
+			  "roomVnum": 0
+			, "direction": "north"
+			, "description": "An exit."
+			, "keywords": ["cobblestone", "path"]
+			, "doorState": "nodoor"
+			, "connectVnum": 1
+			, "keyVnum": 0
 	});
-*/
+
+	test.strictEqual(anExit.roomVnum, 0);
+	test.strictEqual(anExit.direction, "north");
+	test.strictEqual(anExit.description, "An exit.");
+	test.deepEqual(anExit.keywords, ["cobblestone", "path"]);
+	test.strictEqual(anExit.doorState, "nodoor");
+	test.strictEqual(anExit.connectVnum, 1);
+	test.strictEqual(anExit.keyVnum, 0);
+
+	anExit.roomVnum = 271;
+	anExit.direction = "south";
+	anExit.description = "A massive cold iron door.";
+	anExit.keywords = ["iron", "door"];
+	anExit.doorState = "locked";
+	anExit.connectVnum = 275;
+	anExit.keyVnum = 271;
+
+	test.strictEqual(anExit.roomVnum, 271);
+	test.strictEqual(anExit.direction, "south");
+	test.strictEqual(anExit.description, "A massive cold iron door.");
+	test.deepEqual(anExit.keywords, ["iron", "door"]);
+	test.strictEqual(anExit.doorState, "locked");
+	test.strictEqual(anExit.connectVnum, 275);
+	test.strictEqual(anExit.keyVnum, 271);
+
+	test.throws(function() {
+		anExit.roomVnum = undefined;
+	});
+	test.throws(function() {
+		anExit.direction = undefined;
+	});
+	test.throws(function() {
+		anExit.description = undefined;
+	});
+	test.throws(function() {
+		anExit.keywords = undefined;
+	});
+	test.throws(function() {
+		anExit.doorState = undefined;
+	});
+	test.throws(function() {
+		anExit.connectVnum = undefined;
+	});
+	test.throws(function() {
+		anExit.keyVnum = undefined;
+	});
+
+	test.throws(function() {
+		aRoom.roomVnum = "a";
+	});
+	test.throws(function() {
+		aRoom.direction = [0, "foo"];
+	});
+	test.throws(function() {
+		aRoom.direction = "southwest";
+	});
+	test.throws(function() {
+		aRoom.description = 5;
+	});
+	test.throws(function() {
+		aRoom.keywords = "alpha";
+	});
+	test.throws(function() {
+		aRoom.doorState = {"key": "value"};
+	});
+	test.throws(function() {
+		aRoom.doorState = "aleph";
+	});
+	test.throws(function() {
+		aRoom.connectVnum = "bar";
+	});
+	test.throws(function() {
+		aRoom.keyVnum = ["baz"];
+	});
 
 	test.done();
 };
