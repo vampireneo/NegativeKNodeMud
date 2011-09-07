@@ -175,9 +175,6 @@ subsetSetter = function(memberContainer, key, validVals) {
  *	setter: Optional set function for member. If undefined, will simply set the
  *		value of the member to the passed newVal, assuming it's defined and
  *		matches type.
- *
- * Returns
- *	None.
  */
 getterSetter = function(that, memberContainer, key, getter, setter) {
 	var currVal;
@@ -211,7 +208,7 @@ getterSetter = function(that, memberContainer, key, getter, setter) {
  *	builder: String; Name of the area's builder.
  *	areaName: String; Area name, as will be visible by the area command.
  *	filename: String; Filename for the area to be saved in.
- *	vNumRange: Array of Integers: Range of area's vnums. Example: [6, 20].
+ *	vNumRange: Array of Integers: Range of area's vNums. Example: [6, 20].
  *	levelRange: Array of Integers; Suggested minimum and maximum levels for
  *		the area. Example: [3, 15].
  *
@@ -219,7 +216,7 @@ getterSetter = function(that, memberContainer, key, getter, setter) {
  *	Perform better checks on vNumRange and levelRange.
  */
 areaConstructor = function(paramObject) {
-	var that, privateMembers, index;
+	var that, privateMembers, otherGetters, otherSetters, defaultGetSet, index;
 
 	that = {};
 
@@ -229,21 +226,69 @@ areaConstructor = function(paramObject) {
 			, "filename": "filename"
 			, "vNumRange": [0, 0]
 			, "levelRange": [0, 0]
+			, "rooms": []
 	};
+
+	otherGetters = [];
+	otherSetters = ["rooms"];
 
 	for (index in privateMembers) {
 		if (privateMembers.hasOwnProperty(index)) {
-			getterSetter(that, privateMembers, index);
+			defaultGetSet = Math.max(otherGetters.indexOf(index),
+					otherSetters.indexOf(index));
 
-			that[index] = paramObject[index];
+			if (defaultGetSet === -1) {
+				getterSetter(that, privateMembers, index);
+
+				that[index] = paramObject[index];
+			}
 		}
 	}
+
+	getterSetter(that, privateMembers, "rooms", undefined, function(rooms) {
+		var vNumList, dupeVnums, vNumDupe, outOfRange, vNumOut;
+
+		outOfRange = false;
+
+		for (index = 0; 
+				index < that.rooms.length && ! (outOfRange || dupeVnums);
+				index++) {
+			if (rooms[index].vNum < that.vNumRange[0] || 
+					that.vNumRange[1] < rooms[index]) {
+				outOfRange = true;
+				vNumeOut = rooms[index].vNum;
+			}
+			else {
+				if (undefined === vNumList[rooms[index].vNum]) {
+					vNumList[rooms[index].vNum] = 1;
+				}
+				else {
+					dupeVnums = true;
+					vNumDupe = rooms[index].vNum;
+				}
+			}
+		}
+
+		if (dupeVnums) {
+			throw(new Error("vNum already exists in area: " + vNumedupe));
+		}
+		else if (outOfRange) {
+			throw(new Error("vNum out of area's vNum range: " + vNumOut));
+		}
+		else {
+			privateMembers.rooms = rooms;
+		}
+	});
+
+	that.rooms = paramObject.rooms;
+
+	Object.freeze(that);
 
 	return(that);
 };
 
 /* Parameters (Object)
- *	vNum: Integer; Unique vnum for the room.
+ *	vNum: Integer; Unique vNum for the room.
  *	header: String; Short label of the room. Players with 'brief' mode on will
  *		see only this.
  *	description: String; Room description, 3-10ish lines (for style.)
@@ -260,9 +305,7 @@ areaConstructor = function(paramObject) {
  *
  * TODO:
  *	Add array of rooms to areaConstructor once roomConstructor is complete.
- *	Add setter constraints on:
- *		* flags - subsetSetter
- *		* sectorType - subsetSetter
+ *	Add methods to deal with exits.
  */
 roomConstructor = function(paramObject) {
 	var that, privateMembers, index, otherGetters, otherSetters, defaultGetSet,
@@ -274,13 +317,13 @@ roomConstructor = function(paramObject) {
 			  "vNum": 0
 			, "header": "A room"
 			, "description": "A room"
-			, "flags": [null]
+			, "flags": []
 			, "sectorType": 0
-			, "exits": [null]
-			, "extras": [null]
+			, "exits": []
+			, "extras": []
 			, "manaAdjust": 100
 			, "healAdjust": 100
-			, "clans": [null]
+			, "clans": []
 	};
 
 	otherGetters = [];
@@ -342,19 +385,21 @@ roomConstructor = function(paramObject) {
 
 	that.sectorType = paramObject.sectorType;
 
+	Object.freeze(that);
+
 	return(that);
 };
 
 /* Parameters (Object)
- *	roomVnum: Integer; vnum of room the exit belongs to.
+ *	roomVnum: Integer; vNum of room the exit belongs to.
  *	direction: String; Direction which exit is: north, south, east, west, up,
  *			down.
  *	description: String; What will be seen if the character looks in the
  *			exit's direction.
  *	keywords: Array of Strings; Other valid keywords for the exit.
  *	doorState: String; "nodoor", "open", "closed", or "locked".
- *	connectVnum: Integer; vnum of room the exit connects to.
- *	keyVnum: Integer; vnum of key used to lock/unlock door.
+ *	connectVnum: Integer; vNum of room the exit connects to.
+ *	keyVnum: Integer; vNum of key used to lock/unlock door.
  */
 exitConstructor = function(paramObject) {
 	var that, privateMembers, validDirs, validDoors, otherGetters, otherSetters,
@@ -413,6 +458,8 @@ exitConstructor = function(paramObject) {
 
 	that.doorState = paramObject.doorState;
 
+	Object.freeze(that);
+
 	return(that);
 };
 
@@ -464,6 +511,8 @@ mobConstructor = function(paramObject) {
 		}
 	}
 
+	Object.freeze(that);
+
 	return(that);
 };
 
@@ -495,6 +544,8 @@ objConstructor = function(paramObject) {
 			}
 		}
 	}
+
+	Object.freeze(that);
 
 	return(that);
 };
@@ -528,6 +579,8 @@ resetConstructor = function(paramObject) {
 		}
 	}
 
+	Object.freeze(that);
+
 	return(that);
 };
 
@@ -560,6 +613,8 @@ shopConstructor = function(paramObject) {
 		}
 	}
 
+	Object.freeze(that);
+
 	return(that);
 };
 
@@ -591,6 +646,8 @@ specialConstructor = function(paramObject) {
 			}
 		}
 	}
+
+	Object.freeze(that);
 
 	return(that);
 };
