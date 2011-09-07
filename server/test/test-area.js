@@ -222,7 +222,7 @@ testSubsetSetter = function(test) {
 };
 
 testArea = function(test) {
-	var anArea;
+	var anArea, aRoom;
 
 	anArea = area.areaConstructor({
 		  "builder": "A Builder"
@@ -230,6 +230,18 @@ testArea = function(test) {
 		, "filename": "scary.are"
 		, "vNumRange": [1, 20]
 		, "levelRange": [3, 15]
+		, "rooms": [area.roomConstructor({
+			  "vNum": 7
+			, "header": "Just a room"
+			, "description": "A simple room. Family portraits line the walls, basic but functional furniture lies around, and a monster in the corner is staring at you."
+			, "flags": ["dark", "no mob", "private"]
+			, "sectorType": "hills"
+			, "exits": []
+			, "extras": []
+			, "manaAdjust": 85
+			, "healAdjust": 20
+			, "clans": []
+		})]
 	});
 	
 	test.strictEqual(anArea.builder, "A Builder");
@@ -237,6 +249,8 @@ testArea = function(test) {
 	test.strictEqual(anArea.filename, "scary.are");
 	test.deepEqual(anArea.vNumRange, [1, 20]);
 	test.deepEqual(anArea.levelRange, [3, 15]);
+	test.strictEqual(anArea.rooms.length, 1);
+	test.strictEqual(anArea.rooms[0].vNum, 7);
 
 	anArea.builder = "newBuilder";
 	anArea.areaName = "Tasty Area";
@@ -281,6 +295,25 @@ testArea = function(test) {
 	test.deepEqual(anArea.vNumRange, [6, 7]);
 	test.deepEqual(anArea.levelRange, [40, 45]);
 
+	aRoom = area.roomConstructor({
+		  "vNum": 6
+		, "header": "Another room."
+		, "description": "A much simpler room. Walls, ceiling, floor. Maybe a door."
+		, "flags": ["indoors", "pet shop"]
+		, "sectorType": "city"
+		, "exits": []
+		, "extras": []
+		, "manaAdjust": 100
+		, "healAdjust": 100
+		, "clans": []
+	});
+
+	anArea.rooms.push(aRoom);
+
+	test.strictEqual(anArea.rooms.length, 2);
+	test.strictEqual(anArea.rooms[0].vNum, 7);
+	test.strictEqual(anArea.rooms[1].manaAdjust, 100);
+
 	test.done();
 };
 
@@ -297,11 +330,11 @@ testRoom = function(test) {
 		, "description": "A simple room. Family portraits line the walls, basic but functional furniture lies around, and a monster in the corner is staring at you."
 		, "flags": ["dark", "no mob", "private"]
 		, "sectorType": "hills"
-		, "exits": [null]
-		, "extras": [null]
+		, "exits": []
+		, "extras": []
 		, "manaAdjust": 85
 		, "healAdjust": 20
-		, "clans": [null]
+		, "clans": []
 	});
 
 	test.strictEqual(aRoom.vNum, 25);
@@ -311,11 +344,11 @@ testRoom = function(test) {
 		"monster in the corner is staring at you.");
 	test.deepEqual(aRoom.flags, ["dark", "no mob", "private"]);
 	test.strictEqual(aRoom.sectorType, "hills");
-	test.deepEqual(aRoom.exits, [null]);
-	test.deepEqual(aRoom.extras, [null]);
+	test.deepEqual(aRoom.exits, []);
+	test.deepEqual(aRoom.extras, []);
 	test.strictEqual(aRoom.manaAdjust, 85);
 	test.strictEqual(aRoom.healAdjust, 20);
-	test.deepEqual(aRoom.clans, [null]);
+	test.deepEqual(aRoom.clans, []);
 
 	aRoom.vNum = 562;
 	aRoom.header = "A normal room.";
@@ -331,8 +364,8 @@ testRoom = function(test) {
 			, "no recall"
 	];
 	aRoom.sectorType = "desert";
-	aRoom.exits = [null];
-	aRoom.extras = [null];
+	aRoom.exits = [];
+	aRoom.extras = [];
 	aRoom.manaAdjust = 5;
 	aRoom.healAdjust = 195;
 	aRoom.clans = ["stone crows"];
@@ -413,8 +446,8 @@ testRoom = function(test) {
 			, "no recall"
 	]);
 	test.strictEqual(aRoom.sectorType, "desert");
-	test.deepEqual(aRoom.exits, [null]);
-	test.deepEqual(aRoom.extras, [null]);
+	test.deepEqual(aRoom.exits, []);
+	test.deepEqual(aRoom.extras, []);
 	test.strictEqual(aRoom.manaAdjust, 5);
 	test.strictEqual(aRoom.healAdjust, 195);
 	test.deepEqual(aRoom.clans, ["stone crows"]);
