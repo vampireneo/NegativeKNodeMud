@@ -80,3 +80,5 @@ function validateUser(credentials, document, parserMachine) {
 }
 
 exports.authUser = authUser;
+exports.lookupUser = lookupUser;
+exports.validateUser = validateUser;
