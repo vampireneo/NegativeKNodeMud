@@ -3,14 +3,11 @@ body{
 	color: #FFF;
 	background: #000;
 }
-div.console{
+div#terminal{
 	padding: 0.5em;
 	border: 1px solid #232323;
 	border-width: 1px 0;
 	height: 600px;
 	overflow: auto;
-}
-div.console div.jquery-console-prompt-box{
-	color: #fff;
 }
 

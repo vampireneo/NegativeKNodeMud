@@ -1,40 +1,31 @@
-(function($) {
+;(function($) {
 	$(document).ready(function(){
-		var serverSocket = new WebSocket("ws:localhost:4000");
+		var serverSocket= new WebSocket("ws:localhost:4000");
 
-		var jQueryConsole = $('<div class="console">');
+		$('body').append('<div id="terminal">');
 
-		var controller = jQueryConsole.console({
-			promptLabel: 'nodeMud> ',
-			continuedPromptLabel: '  -> ',
-			commandHandle: function(line, report) {
-				if (line != '') {
-					serverSocket.send(line);
-				}
-				return "command printed";
-			},
-			autofocus: true,
-			animateScroll: true,
-			promptHistory: true
+		$('#terminal').terminal(function(command, term) {
+			serverSocket.send(command);
+		}, {
+			name: 'nodeMud',
+			height: 600,
+			prompt: 'nodeMUD>',
+			onInit: function(term) {
+				term.clear();
+
+				serverSocket.onopen = function(event) {
+					term.echo('Connection opened.');
+				};
+
+				serverSocket.onmessage = function(event) {
+					term.echo(event.data);
+				};
+
+				serverSocket.onclose = function(event) {
+					term.echo("Connection closed: " + event.data);
+				};
+			}
 		});
-
-		serverSocket.onopen = function(event) {
-			controller.notice('Connection opened.');
-			controller.scrollToBottom();
-		};
-
-		serverSocket.onmessage = function(event) {
-			controller.notice(event.data);
-			controller.scrollToBottom();
-		};
-
-		serverSocket.onclose = function(event) {
-			controller.notice("Connection closed: " + event.data);
-			controller.scrollToBottom();
-		};
-
-		$('body').append(jQueryConsole);
-		console.log(controller);
 	});
 })(jQuery);
 
