@@ -1,7 +1,9 @@
 var crypto = require("crypto");
 var log = require("./log");
 
-function authUser(credString, db, parserMachine) {
+var authUser, lookupUser, validateUser;
+
+authUser = function(credString, db, parserMachine) {
 	var credentials, err;
 
 	try {
@@ -24,9 +26,9 @@ function authUser(credString, db, parserMachine) {
 
 		lookupUser(credentials, db, parserMachine);
 	}
-}
+};
 
-function lookupUser(credentials, db, parserMachine) {
+lookupUser = function(credentials, db, parserMachine) {
 	db.userNameLookup(credentials.user, function(err, document) {
 		if (undefined === err) {
 			validateUser(credentials, document, parserMachine);
@@ -47,9 +49,9 @@ function lookupUser(credentials, db, parserMachine) {
 			parserMachine.authResults(-1, logMsg, userMsg);
 		}
 	});
-}
+};
 
-function validateUser(credentials, document, parserMachine) {
+validateUser = function(credentials, document, parserMachine) {
 	var authCode, logMsg, userMsg;
 
 	if (undefined === document) {
@@ -77,8 +79,6 @@ function validateUser(credentials, document, parserMachine) {
 	}
 
 	parserMachine.authResults(authCode, logMsg, userMsg);
-}
+};
 
 exports.authUser = authUser;
-exports.lookupUser = lookupUser;
-exports.validateUser = validateUser;
