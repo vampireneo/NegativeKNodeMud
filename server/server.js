@@ -1,25 +1,20 @@
-var websocket = require("websocket-server");
+var io = require("socket.io").listen(4000);
 
 function start(log, Machine) {
 	var socketServer;
 
 	// This needs to get SSLizard.
-	socketServer = websocket.createServer();
-
-	socketServer.addListener("connection", function(connection) {
+	io.sockets.on("connection", function (connection) {
 		var inputState;
 
 		inputState = new Machine(connection);
 
-		log.print(3, "Accepted connection, id: " + connection.id);
+		log.print(3, "Accepted connection. id: " + connection.id);
 
-		connection.addListener("message", function(message) {
+		connection.on("message", function (message) {
 			inputState.parseInput(message);
 		});
 	});
-
-	socketServer.listen(4000);
 }
 
 exports.start = start;
-
