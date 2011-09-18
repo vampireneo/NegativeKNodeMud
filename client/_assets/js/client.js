@@ -1,6 +1,6 @@
 ;(function($) {
 	$(document).ready(function(){
-		var serverSocket= new WebSocket("ws:localhost:4000");
+		var serverSocket = io.connect("http://localhost:4000");
 
 		$('body').append('<div id="terminal">');
 
@@ -13,19 +13,18 @@
 			onInit: function(term) {
 				term.clear();
 
-				serverSocket.onopen = function(event) {
+				serverSocket.on("open", function(event) {
 					term.echo('Connection opened.');
-				};
+				});
 
-				serverSocket.onmessage = function(event) {
-					term.echo(event.data);
-				};
+				serverSocket.on("message", function(event) {
+					term.echo(event);
+				});
 
-				serverSocket.onclose = function(event) {
-					term.echo("Connection closed: " + event.data);
-				};
+				serverSocket.on("close", function(event) {
+					term.echo("Connection closed: " + event);
+				});
 			}
 		});
 	});
 })(jQuery);
-
