@@ -1,10 +1,11 @@
-var crypto = require("crypto");
-var log = require("./log");
+var crypto, log,
+	authUser, lookupUser, validateUser;
 
-var authUser, lookupUser, validateUser;
+crypto = require("crypto");
+log = require("./log");
 
 authUser = function(credString, db, parserMachine) {
-	var credentials, err;
+	var credentials, err, logMsg, userMsg;
 
 	try {
 		credentials = JSON.parse(credString);
@@ -14,8 +15,6 @@ authUser = function(credString, db, parserMachine) {
 	}
 
 	if (-1 == credentials) {
-		var logMsg, userMsg;
-
 		// Need to figure out how to obtain the IP.
 		logMsg = "Failed to parse login string from <IP>.\n\t" + err;
 		userMsg = "Unable to parse credential string.";
@@ -29,30 +28,30 @@ authUser = function(credString, db, parserMachine) {
 };
 
 lookupUser = function(credentials, db, parserMachine) {
+	var logMsg, userMsg;
+
 	db.userNameLookup(credentials.user, function(err, document) {
 		if (undefined === err) {
 			validateUser(credentials, document, parserMachine);
 		}
-		else if (-1 == err) {
-			var logMsg, userMsg;
-
-			logMsg = "Invalid username: " + credentials.user;
-			userMsg = "Invalid username or password.";
-			parserMachine.authResults(-1, logMsg, userMsg);
-		}
 		else {
-			var logMsg, userMsg;
+			if (-1 == err) {
+				logMsg = "Invalid username: " + credentials.user;
+				userMsg = "Invalid username or password.";
+			}
+			else {
+				logMsg = "Failed to look up user '" + credentials.user +
+						"' in database.\n\t" + err;
+				userMsg = "Error when attempting to lookup username.";
+			}
 
-			logMsg = "Failed to look up user '" + credentials.user +
-			  "' in database.\n\t" + err;
-			userMsg = "Error when attempting to lookup username.";
 			parserMachine.authResults(-1, logMsg, userMsg);
 		}
 	});
 };
 
 validateUser = function(credentials, document, parserMachine) {
-	var authCode, logMsg, userMsg;
+	var authCode, logMsg, userMsg, hash, hashedPass;
 
 	if (undefined === document) {
 		authCode = 0;
@@ -60,8 +59,6 @@ validateUser = function(credentials, document, parserMachine) {
 		userMsg = "Invalid username or password.";
 	}
 	else {
-		var hash, hashedPass;
-
 		// I'm typing SHA into my code. I'm pretty sure I'm an idiot.
 		hash = crypto.createHash("sha512");
 		hash.update(credentials.password);
@@ -82,3 +79,5 @@ validateUser = function(credentials, document, parserMachine) {
 };
 
 exports.authUser = authUser;
+exports.__lookupUser = lookupUser;
+exports.__validateUser = validateUser;
