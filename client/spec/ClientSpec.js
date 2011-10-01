@@ -2,8 +2,7 @@ describe("Client", function() {
   var client;
 
   beforeEach(function() {
-    player = new Player();
-    song = new Song();
+    client = new mudClient();
   });
 
   it("should ask for credentials when challenged", function() {
